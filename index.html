@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>W杯2026 観戦カレンダー | 日本時間スケジュール</title>
+<style>
+  :root{
+    --pitch:#0a1f44;
+    --pitch-light:#13316b;
+    --pitch-accent:#1e4d8c;
+    --line:#e8ecf2;
+    --chalk:#f5f7fb;
+    --ink:#1a2230;
+    --gold:#ffc845;
+    --gold-bright:#ffd966;
+    --today-accent:#e0552b;
+    --jp-accent:#bc002d;
+    --muted:#7d889c;
+    --card:#ffffff;
+    --radius:14px;
+    font-family:"Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--pitch);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:40px;
+  }
+  /* === ヘッダー === */
+  header{
+    background:linear-gradient(150deg,var(--pitch) 0%, var(--pitch-accent) 55%, var(--pitch-light) 100%);
+    color:var(--chalk);
+    padding:28px 20px 24px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:4px solid var(--gold);
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(circle at 88% -10%, rgba(255,200,69,0.18) 0%, transparent 45%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  header::after{
+    content:"⚽";
+    position:absolute;
+    font-size:11rem;
+    right:-30px;
+    top:-40px;
+    opacity:0.07;
+    transform:rotate(15deg);
+    pointer-events:none;
+  }
+  .header-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--gold-bright);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  h1{
+    margin:0;
+    font-size:1.55rem;
+    font-weight:800;
+    letter-spacing:0.02em;
+    line-height:1.3;
+  }
+  h1 .small{
+    display:block;
+    font-size:0.78rem;
+    font-weight:500;
+    color:rgba(247,245,239,0.75);
+    margin-top:6px;
+    letter-spacing:0.04em;
+  }
+  .update-bar{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11.5px;
+    color:rgba(247,245,239,0.85);
+  }
+  .update-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:#5fd97e;
+    box-shadow:0 0 0 0 rgba(95,217,126,0.5);
+    animation:pulse 2.2s infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(95,217,126,0.5);}
+    70%{box-shadow:0 0 0 6px rgba(95,217,126,0);}
+    100%{box-shadow:0 0 0 0 rgba(95,217,126,0);}
+  }
+
+  /* === 今日の試合パネル === */
+  .today-wrap{
+    max-width:680px;
+    margin:-14px auto 0;
+    padding:0 16px;
+    position:relative;
+    z-index:2;
+  }
+  .today-card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 8px 28px rgba(10,31,68,0.3);
+    padding:18px 18px 16px;
+    border-top:4px solid var(--today-accent);
+  }
+  .today-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .today-title{
+    font-size:0.95rem;
+    font-weight:800;
+    color:var(--today-accent);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .today-date{
+    font-size:0.78rem;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .today-empty{
+    font-size:0.88rem;
+    color:var(--muted);
+    padding:8px 2px 4px;
+    line-height:1.7;
+  }
+  .today-empty b{color:var(--ink);}
+
+  /* === タブ切替 === */
+  .tabs{
+    max-width:680px;
+    margin:18px auto 0;
+    padding:0 16px;
+    display:flex;
+    gap:6px;
+  }
+  .tab-btn{
+    flex:1;
+    background:rgba(247,245,239,0.08);
+    border:1px solid rgba(247,245,239,0.18);
+    color:var(--chalk);
+    padding:10px 8px;
+    border-radius:10px;
+    font-size:0.82rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.15s ease;
+    letter-spacing:0.02em;
+  }
+  .tab-btn.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--pitch);
+  }
+
+  /* === フィルターチップ === */
+  .filters{
+    max-width:680px;
+    margin:12px auto 0;
+    padding:0 16px;
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;
+    background:rgba(247,245,239,0.08);
+    border:1px solid rgba(247,245,239,0.18);
+    color:rgba(247,245,239,0.85);
+    padding:7px 14px;
+    border-radius:999px;
+    font-size:0.76rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--chalk);
+    color:var(--pitch);
+    border-color:var(--chalk);
+  }
+
+  /* === コンテンツ === */
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:16px 16px 0;
+  }
+  .day-group{margin-bottom:18px;}
+  .day-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 2px 8px;
+    position:sticky;
+    top:0;
+    z-index:5;
+  }
+  .day-header .d-date{
+    font-size:0.95rem;
+    font-weight:800;
+    color:var(--chalk);
+  }
+  .day-header .d-weekday{
+    font-size:0.72rem;
+    color:var(--gold-bright);
+    font-weight:700;
+    background:rgba(255,255,255,0.08);
+    padding:2px 8px;
+    border-radius:6px;
+  }
+  .day-header.is-today .d-date{color:var(--today-accent);}
+  .day-header.is-today .d-weekday{
+    background:var(--today-accent);
+    color:#fff;
+  }
+  .day-line{
+    flex:1;
+    height:1px;
+    background:rgba(255,255,255,0.12);
+  }
+
+  /* === 試合カード === */
+  .match-card{
+    background:var(--card);
+    border-radius:14px;
+    margin-bottom:10px;
+    overflow:hidden;
+    box-shadow:0 3px 12px rgba(10,31,68,0.16);
+    border:1px solid rgba(10,31,68,0.05);
+    transition:opacity 0.2s;
+  }
+  /* --- 終了済み試合: グレーアウト --- */
+  .match-card.is-finished{
+    opacity:0.55;
+  }
+  .match-card.is-finished .team-block{
+    background:#f0f1f4;
+  }
+  .match-card.is-finished .vs-divider{
+    background:linear-gradient(135deg, #9aa4b5, #7d889c);
+  }
+  .match-card.is-finished:active,
+  .match-card.is-finished.open{
+    opacity:0.85;
+  }
+  /* --- 日本戦: 特別装飾 --- */
+  .match-card.is-japan{
+    border:2px solid var(--jp-accent);
+    box-shadow:0 4px 16px rgba(188,0,45,0.22);
+    position:relative;
+  }
+  .match-card.is-japan::before{
+    content:"🇯🇵 SAMURAI BLUE";
+    position:absolute;
+    top:0;
+    right:0;
+    background:var(--jp-accent);
+    color:#fff;
+    font-size:0.62rem;
+    font-weight:800;
+    letter-spacing:0.05em;
+    padding:3px 10px;
+    border-radius:0 0 0 8px;
+  }
+  .match-card.is-japan .vs-row{margin-top:2px;}
+  .match-card.is-japan .team-block.home,
+  .match-card.is-japan .team-block.away{
+    background:linear-gradient(135deg, #fff5f6 0%, #ffe9eb 100%);
+  }
+  .match-card.is-japan .team-name.jp{
+    font-size:1.0rem;
+  }
+  .match-card.is-japan .vs-divider{
+    background:linear-gradient(135deg, var(--jp-accent), #8a0020);
+  }
+  .match-card.is-japan.is-finished{
+    opacity:0.7;
+  }
+  .match-card.is-japan.is-finished .team-block.home,
+  .match-card.is-japan.is-finished .team-block.away{
+    background:#f6ecee;
+  }
+  /* --- ステータスバッジ --- */
+  .status-badge{
+    font-size:0.62rem;
+    font-weight:800;
+    padding:3px 8px;
+    border-radius:5px;
+    letter-spacing:0.03em;
+  }
+  .status-badge.finished{
+    background:var(--line);
+    color:var(--muted);
+  }
+  .status-badge.live{
+    background:#fde8e8;
+    color:#d32f2f;
+    animation:live-pulse 1.6s infinite;
+  }
+  @keyframes live-pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:0.55;}
+  }
+  .match-summary{
+    padding:11px 14px 13px;
+    cursor:pointer;
+  }
+  .match-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .match-time-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .match-time{
+    font-size:0.88rem;
+    font-weight:800;
+    color:var(--pitch);
+    line-height:1;
+    display:inline-flex;
+    align-items:baseline;
+    gap:3px;
+  }
+  .match-time small{
+    font-size:0.6rem;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .stage-tag{
+    display:inline-block;
+    font-size:0.62rem;
+    font-weight:800;
+    padding:3px 8px;
+    border-radius:5px;
+    background:var(--line);
+    color:var(--pitch);
+    letter-spacing:0.03em;
+  }
+  .stage-tag.gs{background:#e8f0fc;color:var(--pitch-accent);}
+  .stage-tag.ko{background:#fff1cf;color:#9a6e0a;}
+  .stage-tag.note-tag{background:#fdf3da;color:#9a7416;}
+  .jp-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:3px;
+    font-size:0.62rem;
+    font-weight:800;
+    color:var(--jp-accent);
+    background:#fdeaec;
+    padding:3px 8px;
+    border-radius:5px;
+  }
+  .chevron{
+    flex-shrink:0;
+    width:18px;height:18px;
+    color:var(--muted);
+    transition:transform 0.2s;
+    margin-left:6px;
+  }
+  .match-card.open .chevron{transform:rotate(180deg);}
+
+  /* --- VS横並び --- */
+  .vs-row{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:8px;
+  }
+  .team-block{
+    background:linear-gradient(135deg, var(--chalk) 0%, #eef1f7 100%);
+    border-radius:10px;
+    padding:10px 8px;
+    text-align:center;
+    border:1px solid rgba(10,31,68,0.06);
+  }
+  .team-block.home{
+    border-left:3px solid var(--pitch-accent);
+  }
+  .team-block.away{
+    border-right:3px solid var(--gold);
+  }
+  .team-name{
+    font-size:0.88rem;
+    font-weight:800;
+    color:var(--ink);
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    line-height:1.3;
+  }
+  .team-name.jp{color:var(--jp-accent);}
+  .vs-divider{
+    font-size:0.72rem;
+    font-weight:900;
+    color:#fff;
+    background:linear-gradient(135deg, var(--pitch-accent), var(--pitch));
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    letter-spacing:0.02em;
+    box-shadow:0 2px 6px rgba(10,31,68,0.25);
+  }
+
+  /* === 詳細パネル === */
+  .match-detail{
+    display:none;
+    padding:0 14px 14px;
+    border-top:1px solid var(--line);
+  }
+  .match-card.open .match-detail{display:block;}
+  .detail-section{
+    margin-top:12px;
+  }
+  .detail-label{
+    font-size:0.68rem;
+    font-weight:800;
+    color:var(--pitch-light);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:5px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .detail-label::before{
+    content:"";
+    width:4px;height:4px;
+    border-radius:50%;
+    background:var(--gold);
+    display:inline-block;
+  }
+  .broadcast-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:4px;
+  }
+  .broadcast-pill{
+    font-size:0.74rem;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:8px;
+    background:var(--chalk);
+    color:var(--ink);
+    border:1px solid var(--line);
+  }
+  .broadcast-pill.dazn{background:#fff3e0;color:#a85b1d;border-color:#ffe0bc;}
+  .broadcast-pill.nhk{background:#e6f0fb;color:#1a5fa0;border-color:#cfe4fb;}
+  .broadcast-pill.ntv{background:#fdeaec;color:#bc002d;border-color:#fad0d6;}
+  .broadcast-pill.cx{background:#f1ecfb;color:#5b3fa0;border-color:#e0d4f5;}
+  .commentary-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  .link-pill{
+    font-size:0.76rem;
+    font-weight:700;
+    padding:7px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    border:1px solid var(--line);
+    background:var(--chalk);
+    color:var(--ink);
+    transition:opacity 0.15s;
+  }
+  .link-pill:active{opacity:0.6;}
+  .link-pill.dazn{background:#fff3e0;color:#a85b1d;border-color:#ffe0bc;}
+  .link-pill.nhk{background:#e6f0fb;color:#1a5fa0;border-color:#cfe4fb;}
+  .link-pill.ntv{background:#fdeaec;color:#bc002d;border-color:#fad0d6;}
+  .link-pill.cx{background:#f1ecfb;color:#5b3fa0;border-color:#e0d4f5;}
+  .link-pill.goal{background:#eef6ee;color:#2f7a3f;border-color:#d6ebd9;}
+  .commentary-note{
+    font-size:0.68rem;
+    color:var(--muted);
+    line-height:1.6;
+    margin-top:6px;
+  }
+  .venue-text{
+    font-size:0.82rem;
+    color:#3a4842;
+    line-height:1.6;
+  }
+
+  /* === 空状態・フッター === */
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:rgba(247,245,239,0.6);
+    font-size:0.85rem;
+    line-height:1.8;
+  }
+  footer{
+    max-width:680px;
+    margin:28px auto 0;
+    padding:18px 20px 0;
+    text-align:center;
+    color:rgba(247,245,239,0.45);
+    font-size:0.7rem;
+    line-height:1.8;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  footer a{color:var(--gold-bright);text-decoration:none;}
+
+  /* === 凡例セクション === */
+  .legend{
+    max-width:680px;
+    margin:20px auto 0;
+    padding:16px;
+    background:rgba(247,245,239,0.06);
+    border-radius:var(--radius);
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .legend h2{
+    font-size:0.85rem;
+    color:var(--gold-bright);
+    margin:0 0 10px;
+    font-weight:800;
+  }
+  .legend-row{
+    font-size:0.74rem;
+    color:rgba(247,245,239,0.8);
+    line-height:1.9;
+    margin-bottom:6px;
+  }
+  .legend-row b{color:var(--chalk);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">FIFA World Cup 2026 &middot; 北中米大会</div>
+    <h1>W杯2026 観戦カレンダー
+      <span class="small">全104試合・日本時間（JST）スケジュール / 放送・実況解説</span>
+    </h1>
+    <div class="update-bar">
+      <span class="update-dot"></span>
+      <span id="update-text">読み込み中...</span>
+    </div>
+  </div>
+</header>
+
+<div class="today-wrap">
+  <div class="today-card" id="today-card">
+    <!-- JSで生成 -->
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-view="date">日程順</button>
+  <button class="tab-btn" data-view="group">グループ別</button>
+  <button class="tab-btn" data-view="japan">日本代表</button>
+</div>
+
+<div class="filters" id="filters">
+  <!-- JSで生成（グループ別表示時のみ） -->
+</div>
+
+<main id="main-content">
+  <!-- JSで生成 -->
+</main>
+
+<div class="legend">
+  <h2>放送・配信について</h2>
+  <div class="legend-row">本アプリのグループステージ(72試合)の放送局情報は、ABEMA TIMES「FIFAワールドカップ2026 全104試合 テレビ放送・ネット配信まとめ」(2026/6/13時点)を基にしています。</div>
+  <div class="legend-row">『DAZN』は全104試合をライブ配信(日本戦は無料)。『NHK BSP4K』は全104試合を生中継または録画で放送。地上波(NHK総合・日本テレビ・フジテレビ)は確定済みカードのみ表示しています。</div>
+  <div class="legend-row">実況・解説者の情報は試合直前に各局から発表されるため、各試合の「実況・解説」欄から該当局の番組表ページへ移動してご確認ください。</div>
+  <div class="legend-row" style="margin-top:8px;opacity:0.7;">※決勝トーナメントの対戦カードは結果により決定します。表示は仮の組み合わせ表記（例: A組1位 vs C/E/F/H/I組3位）です。地上波の中継カードは順次発表され、本アプリは未反映の場合があります。</div>
+</div>
+
+<footer>
+  データ最終更新: <span id="footer-date"></span><br>
+  放送・実況情報は変更される場合があります。最新情報は各局公式サイトをご確認ください。<br>
+  参考: サブスクなび W杯2026日程ページ
+</footer>
+
+<script>
+// FIFAワールドカップ2026 全104試合データ（日本時間）
+// 出典: Goal.com Japan, 各種報道(2026年6月時点)
+// 出典: ABEMA TIMES (times.abema.tv/articles/-/10243707) 2026/6/13時点
+// match no -> broadcast object
+const BROADCAST_MAP = {
+1:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/12 04:00 メキシコ vs 南アフリカ NHK,BSP4K
+2:  {dazn:"全104試合ライブ配信"},                                                  // 6/12 11:00 韓国 vs チェコ BSP4K
+7:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/13 04:00 カナダ vs ボスニア NHK,BSP4K
+19: {dazn:"全104試合ライブ配信"},                                                  // 6/13 10:00 アメリカ vs パラグアイ BSP4K
+8:  {dazn:"全104試合ライブ配信"},                                                  // 6/14 04:00 カタール vs スイス BSP4K
+13: {dazn:"全104試合ライブ配信"},                                                  // 6/14 07:00 ブラジル vs モロッコ BSP4K
+14: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/14 10:00 ハイチ vs スコットランド NHK,BSP4K
+20: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/14 13:00 オーストラリア vs トルコ 日テレ,BSP4K
+25: {dazn:"全104試合ライブ配信"},                                                  // 6/15 02:00 ドイツ vs キュラソー BSP4K
+31: {dazn:"全試合無料配信", nhk:"NHK総合", nhk_note:"地上波生中継"},               // 6/15 05:00 オランダ vs 日本 NHK,BSP4K, DAZN無料
+26: {dazn:"全104試合ライブ配信"},                                                  // 6/15 08:00 コートジボワール vs エクアドル BSP4K
+32: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/15 11:00 スウェーデン vs チュニジア 日テレ,BSP4K
+43: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/16 01:00 スペイン vs カーボベルデ NHK,BSP4K
+37: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/16 04:00 ベルギー vs エジプト NHK,BSP4K
+44: {dazn:"全104試合ライブ配信"},                                                  // 6/16 07:00 サウジアラビア vs ウルグアイ BSP4K
+38: {dazn:"全104試合ライブ配信"},                                                  // 6/16 10:00 イラン vs ニュージーランド BSP4K
+49: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/17 04:00 フランス vs セネガル フジ,BSP4K
+50: {dazn:"全104試合ライブ配信"},                                                  // 6/17 07:00 イラク vs ノルウェー BSP4K
+55: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/17 10:00 アルゼンチン vs アルジェリア NHK,BSP4K
+56: {dazn:"全104試合ライブ配信"},                                                  // 6/17 13:00 オーストリア vs ヨルダン BSP4K
+61: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/18 02:00 ポルトガル vs コンゴ フジ,BSP4K
+67: {dazn:"全104試合ライブ配信"},                                                  // 6/18 05:00 イングランド vs クロアチア BSP4K
+68: {dazn:"全104試合ライブ配信"},                                                  // 6/18 08:00 ガーナ vs パナマ BSP4K
+62: {dazn:"全104試合ライブ配信"},                                                  // 6/18 11:00 ウズベキスタン vs コロンビア BSP4K
+3:  {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/19 01:00 チェコ vs 南アフリカ 日テレ,BSP4K
+9:  {dazn:"全104試合ライブ配信"},                                                  // 6/19 04:00 スイス vs ボスニア BSP4K
+10: {dazn:"全104試合ライブ配信"},                                                  // 6/19 07:00 カナダ vs カタール BSP4K
+4:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/19 10:00 メキシコ vs 韓国 NHK,BSP4K
+21: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/20 04:00 アメリカ vs オーストラリア NHK,BSP4K
+15: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/20 07:00 スコットランド vs モロッコ フジ,BSP4K
+16: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/20 09:30 ブラジル vs ハイチ NHK,BSP4K (時刻09:30に修正)
+22: {dazn:"全104試合ライブ配信"},                                                  // 6/20 12:00 トルコ vs パラグアイ BSP4K (時刻12:00に修正)
+33: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/21 02:00 オランダ vs スウェーデン NHK,BSP4K
+27: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/21 05:00 ドイツ vs コートジボワール 日テレ,BSP4K
+28: {dazn:"全104試合ライブ配信"},                                                  // 6/21 09:00 エクアドル vs キュラソー BSP4K
+34: {dazn:"全試合無料配信", ntv:"日本テレビ系", ntv_note:"地上波生中継", nhk:"NHK BS", nhk_note:"BS生中継"}, // 6/21 13:00 チュニジア vs 日本 日テレ,NHK BS
+45: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/22 01:00 スペイン vs サウジアラビア NHK,BSP4K
+39: {dazn:"全104試合ライブ配信"},                                                  // 6/22 04:00 ベルギー vs イラン BSP4K
+46: {dazn:"全104試合ライブ配信"},                                                  // 6/22 07:00 ウルグアイ vs カーボベルデ BSP4K
+40: {dazn:"全104試合ライブ配信"},                                                  // 6/22 10:00 ニュージーランド vs エジプト BSP4K
+57: {dazn:"全104試合ライブ配信"},                                                  // 6/23 02:00 アルゼンチン vs オーストリア BSP4K
+51: {dazn:"全104試合ライブ配信"},                                                  // 6/23 06:00 フランス vs イラク BSP4K
+52: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/23 09:00 ノルウェー vs セネガル NHK,BSP4K
+58: {dazn:"全104試合ライブ配信"},                                                  // 6/23 12:00 ヨルダン vs アルジェリア BSP4K
+63: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/24 02:00 ポルトガル vs ウズベキスタン NHK,BSP4K
+69: {dazn:"全104試合ライブ配信"},                                                  // 6/24 05:00 イングランド vs ガーナ BSP4K
+70: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/24 08:00 パナマ vs クロアチア フジ,BSP4K
+64: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/24 11:00 コロンビア vs コンゴ 日テレ,BSP4K
+11: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/25 04:00 スイス vs カナダ NHK,BSP4K
+12: {dazn:"全104試合ライブ配信"},                                                  // 6/25 04:00 ボスニア vs カタール BSP4K
+17: {dazn:"全104試合ライブ配信"},                                                  // 6/25 07:00 スコットランド vs ブラジル BSP4K (時刻07:00)
+18: {dazn:"全104試合ライブ配信"},                                                  // 6/25 07:00 モロッコ vs ハイチ BSP4K
+5:  {dazn:"全104試合ライブ配信"},                                                  // 6/25 10:00 南アフリカ vs 韓国 BSP4K
+6:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/25 10:00 チェコ vs メキシコ NHK,BSP4K
+29: {dazn:"全104試合ライブ配信"},                                                  // 6/26 05:00 キュラソー vs コートジボワール BSP4K
+30: {dazn:"全104試合ライブ配信"},                                                  // 6/26 05:00 エクアドル vs ドイツ BSP4K
+35: {dazn:"全試合無料配信", nhk:"NHK総合", nhk_note:"地上波生中継"},               // 6/26 08:00 日本 vs スウェーデン NHK,BSP4K
+36: {dazn:"全104試合ライブ配信"},                                                  // 6/26 08:00 チュニジア vs オランダ BSP4K
+23: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/26 11:00 トルコ vs アメリカ 日テレ,BSP4K
+24: {dazn:"全104試合ライブ配信"},                                                  // 6/26 11:00 パラグアイ vs オーストラリア BSP4K
+53: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/27 04:00 ノルウェー vs フランス NHK,BSP4K
+54: {dazn:"全104試合ライブ配信"},                                                  // 6/27 04:00 セネガル vs イラク BSP4K
+47: {dazn:"全104試合ライブ配信"},                                                  // 6/27 09:00 カーボベルデ vs サウジアラビア BSP4K
+48: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/27 09:00 ウルグアイ vs スペイン 日テレ,BSP4K
+41: {dazn:"全104試合ライブ配信"},                                                  // 6/27 12:00 エジプト vs イラン BSP4K
+42: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/27 12:00 ニュージーランド vs ベルギー 日テレ,BSP4K
+71: {dazn:"全104試合ライブ配信"},                                                  // 6/28 06:00 パナマ vs イングランド BSP4K
+72: {dazn:"全104試合ライブ配信"},                                                  // 6/28 06:00 クロアチア vs ガーナ BSP4K
+65: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/28 08:30 コロンビア vs ポルトガル フジ,BSP4K
+66: {dazn:"全104試合ライブ配信"},                                                  // 6/28 08:30 コンゴ vs ウズベキスタン BSP4K
+59: {dazn:"全104試合ライブ配信"},                                                  // 6/28 11:00 アルジェリア vs オーストリア BSP4K
+60: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/28 11:00 ヨルダン vs アルゼンチン NHK,BSP4K
+};
+
+const MATCHES = [
+// === グループステージ (72試合) ===
+// グループA
+{no:1, stage:"GS", group:"A", round:1, date:"2026-06-12", time:"04:00", home:"メキシコ", away:"南アフリカ", venue:"エスタディオ・アステカ(メキシコ)", note:"開幕戦"},
+{no:2, stage:"GS", group:"A", round:1, date:"2026-06-12", time:"11:00", home:"韓国", away:"チェコ", venue:"エスタディオ・グアダラハラ(メキシコ)"},
+{no:3, stage:"GS", group:"A", round:2, date:"2026-06-19", time:"01:00", home:"チェコ", away:"南アフリカ", venue:"アトランタ・スタジアム(アメリカ)"},
+{no:4, stage:"GS", group:"A", round:2, date:"2026-06-19", time:"10:00", home:"メキシコ", away:"韓国", venue:"エスタディオ・グアダラハラ(メキシコ)"},
+{no:5, stage:"GS", group:"A", round:3, date:"2026-06-25", time:"10:00", home:"南アフリカ", away:"韓国", venue:"エスタディオ・モンテレイ(メキシコ)"},
+{no:6, stage:"GS", group:"A", round:3, date:"2026-06-25", time:"10:00", home:"チェコ", away:"メキシコ", venue:"エスタディオ・アステカ(メキシコ)"},
+// グループB
+{no:7, stage:"GS", group:"B", round:1, date:"2026-06-13", time:"04:00", home:"カナダ", away:"ボスニア・ヘルツェゴビナ", venue:"トロントスタジアム(カナダ)"},
+{no:8, stage:"GS", group:"B", round:1, date:"2026-06-14", time:"04:00", home:"カタール", away:"スイス", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+{no:9, stage:"GS", group:"B", round:2, date:"2026-06-19", time:"04:00", home:"スイス", away:"ボスニア・ヘルツェゴビナ", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:10, stage:"GS", group:"B", round:2, date:"2026-06-19", time:"07:00", home:"カナダ", away:"カタール", venue:"BCプレイスバンクーバー(カナダ)"},
+{no:11, stage:"GS", group:"B", round:3, date:"2026-06-25", time:"04:00", home:"スイス", away:"カナダ", venue:"BCプレイスバンクーバー(カナダ)"},
+{no:12, stage:"GS", group:"B", round:3, date:"2026-06-25", time:"04:00", home:"ボスニア・ヘルツェゴビナ", away:"カタール", venue:"シアトルスタジアム(アメリカ)"},
+// グループC
+{no:13, stage:"GS", group:"C", round:1, date:"2026-06-14", time:"07:00", home:"ブラジル", away:"モロッコ", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:14, stage:"GS", group:"C", round:1, date:"2026-06-14", time:"10:00", home:"ハイチ", away:"スコットランド", venue:"ボストンスタジアム(アメリカ)"},
+{no:15, stage:"GS", group:"C", round:2, date:"2026-06-20", time:"07:00", home:"スコットランド", away:"モロッコ", venue:"ボストンスタジアム(アメリカ)"},
+{no:16, stage:"GS", group:"C", round:2, date:"2026-06-20", time:"09:30", home:"ブラジル", away:"ハイチ", venue:"フィラデルフィアスタジアム(アメリカ)"},
+{no:17, stage:"GS", group:"C", round:3, date:"2026-06-25", time:"07:00", home:"スコットランド", away:"ブラジル", venue:"マイアミスタジアム(アメリカ)"},
+{no:18, stage:"GS", group:"C", round:3, date:"2026-06-25", time:"07:00", home:"モロッコ", away:"ハイチ", venue:"アトランタスタジアム(アメリカ)"},
+// グループD
+{no:19, stage:"GS", group:"D", round:1, date:"2026-06-13", time:"10:00", home:"アメリカ", away:"パラグアイ", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:20, stage:"GS", group:"D", round:1, date:"2026-06-14", time:"13:00", home:"オーストラリア", away:"トルコ", venue:"BCプレイスバンクーバー(カナダ)"},
+{no:21, stage:"GS", group:"D", round:2, date:"2026-06-20", time:"04:00", home:"アメリカ", away:"オーストラリア", venue:"シアトルスタジアム(アメリカ)"},
+{no:22, stage:"GS", group:"D", round:2, date:"2026-06-20", time:"12:00", home:"トルコ", away:"パラグアイ", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+{no:23, stage:"GS", group:"D", round:3, date:"2026-06-26", time:"11:00", home:"トルコ", away:"アメリカ", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:24, stage:"GS", group:"D", round:3, date:"2026-06-26", time:"11:00", home:"パラグアイ", away:"オーストラリア", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+// グループE
+{no:25, stage:"GS", group:"E", round:1, date:"2026-06-15", time:"02:00", home:"ドイツ", away:"キュラソー", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:26, stage:"GS", group:"E", round:1, date:"2026-06-15", time:"08:00", home:"コートジボワール", away:"エクアドル", venue:"フィラデルフィアスタジアム(アメリカ)"},
+{no:27, stage:"GS", group:"E", round:2, date:"2026-06-21", time:"05:00", home:"ドイツ", away:"コートジボワール", venue:"トロントスタジアム(カナダ)"},
+{no:28, stage:"GS", group:"E", round:2, date:"2026-06-21", time:"09:00", home:"エクアドル", away:"キュラソー", venue:"カンザスシティスタジアム(アメリカ)"},
+{no:29, stage:"GS", group:"E", round:3, date:"2026-06-26", time:"05:00", home:"キュラソー", away:"コートジボワール", venue:"フィラデルフィアスタジアム(アメリカ)"},
+{no:30, stage:"GS", group:"E", round:3, date:"2026-06-26", time:"05:00", home:"エクアドル", away:"ドイツ", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+// グループF（日本代表）
+{no:31, stage:"GS", group:"F", round:1, date:"2026-06-15", time:"05:00", home:"オランダ", away:"日本", venue:"ダラススタジアム(アメリカ)", japan:true},
+{no:32, stage:"GS", group:"F", round:1, date:"2026-06-15", time:"11:00", home:"スウェーデン", away:"チュニジア", venue:"モンテレースタジアム(メキシコ)"},
+{no:33, stage:"GS", group:"F", round:2, date:"2026-06-21", time:"02:00", home:"オランダ", away:"スウェーデン", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:34, stage:"GS", group:"F", round:2, date:"2026-06-21", time:"13:00", home:"チュニジア", away:"日本", venue:"モンテレースタジアム(メキシコ)", japan:true},
+{no:35, stage:"GS", group:"F", round:3, date:"2026-06-26", time:"08:00", home:"日本", away:"スウェーデン", venue:"ダラススタジアム(アメリカ)", japan:true},
+{no:36, stage:"GS", group:"F", round:3, date:"2026-06-26", time:"08:00", home:"チュニジア", away:"オランダ", venue:"カンザスシティスタジアム(アメリカ)"},
+// グループG
+{no:37, stage:"GS", group:"G", round:1, date:"2026-06-16", time:"04:00", home:"ベルギー", away:"エジプト", venue:"シアトルスタジアム(アメリカ)"},
+{no:38, stage:"GS", group:"G", round:1, date:"2026-06-16", time:"10:00", home:"イラン", away:"ニュージーランド", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:39, stage:"GS", group:"G", round:2, date:"2026-06-22", time:"04:00", home:"ベルギー", away:"イラン", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:40, stage:"GS", group:"G", round:2, date:"2026-06-22", time:"10:00", home:"ニュージーランド", away:"エジプト", venue:"BCプレイスバンクーバー(カナダ)"},
+{no:41, stage:"GS", group:"G", round:3, date:"2026-06-27", time:"12:00", home:"エジプト", away:"イラン", venue:"シアトルスタジアム(アメリカ)"},
+{no:42, stage:"GS", group:"G", round:3, date:"2026-06-27", time:"12:00", home:"ニュージーランド", away:"ベルギー", venue:"BCプレイスバンクーバー(カナダ)"},
+// グループH
+{no:43, stage:"GS", group:"H", round:1, date:"2026-06-16", time:"01:00", home:"スペイン", away:"カーボベルデ", venue:"アトランタスタジアム(アメリカ)"},
+{no:44, stage:"GS", group:"H", round:1, date:"2026-06-16", time:"07:00", home:"サウジアラビア", away:"ウルグアイ", venue:"マイアミスタジアム(アメリカ)"},
+{no:45, stage:"GS", group:"H", round:2, date:"2026-06-22", time:"01:00", home:"スペイン", away:"サウジアラビア", venue:"アトランタスタジアム(アメリカ)"},
+{no:46, stage:"GS", group:"H", round:2, date:"2026-06-22", time:"07:00", home:"ウルグアイ", away:"カーボベルデ", venue:"マイアミスタジアム(アメリカ)"},
+{no:47, stage:"GS", group:"H", round:3, date:"2026-06-27", time:"09:00", home:"カーボベルデ", away:"サウジアラビア", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:48, stage:"GS", group:"H", round:3, date:"2026-06-27", time:"09:00", home:"ウルグアイ", away:"スペイン", venue:"グアダラハラスタジアム(メキシコ)"},
+// グループI
+{no:49, stage:"GS", group:"I", round:1, date:"2026-06-17", time:"04:00", home:"フランス", away:"セネガル", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:50, stage:"GS", group:"I", round:1, date:"2026-06-17", time:"07:00", home:"イラク", away:"ノルウェー", venue:"ボストンスタジアム(アメリカ)"},
+{no:51, stage:"GS", group:"I", round:2, date:"2026-06-23", time:"06:00", home:"フランス", away:"イラク", venue:"フィラデルフィアスタジアム(アメリカ)"},
+{no:52, stage:"GS", group:"I", round:2, date:"2026-06-23", time:"09:00", home:"ノルウェー", away:"セネガル", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:53, stage:"GS", group:"I", round:3, date:"2026-06-27", time:"04:00", home:"ノルウェー", away:"フランス", venue:"ボストンスタジアム(アメリカ)"},
+{no:54, stage:"GS", group:"I", round:3, date:"2026-06-27", time:"04:00", home:"セネガル", away:"イラク", venue:"トロントスタジアム(カナダ)"},
+// グループJ
+{no:55, stage:"GS", group:"J", round:1, date:"2026-06-17", time:"10:00", home:"アルゼンチン", away:"アルジェリア", venue:"カンザスシティスタジアム(アメリカ)"},
+{no:56, stage:"GS", group:"J", round:1, date:"2026-06-17", time:"13:00", home:"オーストリア", away:"ヨルダン", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+{no:57, stage:"GS", group:"J", round:2, date:"2026-06-23", time:"02:00", home:"アルゼンチン", away:"オーストリア", venue:"ダラススタジアム(アメリカ)"},
+{no:58, stage:"GS", group:"J", round:2, date:"2026-06-23", time:"12:00", home:"ヨルダン", away:"アルジェリア", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+{no:59, stage:"GS", group:"J", round:3, date:"2026-06-28", time:"11:00", home:"アルジェリア", away:"オーストリア", venue:"カンザスシティスタジアム(アメリカ)"},
+{no:60, stage:"GS", group:"J", round:3, date:"2026-06-28", time:"11:00", home:"ヨルダン", away:"アルゼンチン", venue:"ダラススタジアム(アメリカ)"},
+// グループK
+{no:61, stage:"GS", group:"K", round:1, date:"2026-06-18", time:"02:00", home:"ポルトガル", away:"コンゴ民主共和国", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:62, stage:"GS", group:"K", round:1, date:"2026-06-18", time:"11:00", home:"ウズベキスタン", away:"コロンビア", venue:"メキシコシティスタジアム(メキシコ)"},
+{no:63, stage:"GS", group:"K", round:2, date:"2026-06-24", time:"02:00", home:"ポルトガル", away:"ウズベキスタン", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:64, stage:"GS", group:"K", round:2, date:"2026-06-24", time:"11:00", home:"コロンビア", away:"コンゴ民主共和国", venue:"グアダラハラスタジアム(メキシコ)"},
+{no:65, stage:"GS", group:"K", round:3, date:"2026-06-28", time:"08:30", home:"コロンビア", away:"ポルトガル", venue:"マイアミスタジアム(アメリカ)"},
+{no:66, stage:"GS", group:"K", round:3, date:"2026-06-28", time:"08:30", home:"コンゴ民主共和国", away:"ウズベキスタン", venue:"アトランタスタジアム(アメリカ)"},
+// グループL
+{no:67, stage:"GS", group:"L", round:1, date:"2026-06-18", time:"05:00", home:"イングランド", away:"クロアチア", venue:"ダラススタジアム(アメリカ)"},
+{no:68, stage:"GS", group:"L", round:1, date:"2026-06-18", time:"08:00", home:"ガーナ", away:"パナマ", venue:"トロントスタジアム(カナダ)"},
+{no:69, stage:"GS", group:"L", round:2, date:"2026-06-24", time:"05:00", home:"イングランド", away:"ガーナ", venue:"ボストンスタジアム(アメリカ)"},
+{no:70, stage:"GS", group:"L", round:2, date:"2026-06-24", time:"08:00", home:"パナマ", away:"クロアチア", venue:"トロントスタジアム(カナダ)"},
+{no:71, stage:"GS", group:"L", round:3, date:"2026-06-28", time:"06:00", home:"パナマ", away:"イングランド", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:72, stage:"GS", group:"L", round:3, date:"2026-06-28", time:"06:00", home:"クロアチア", away:"ガーナ", venue:"フィラデルフィアスタジアム(アメリカ)"},
+
+// === ラウンド32 (16試合) ===
+{no:73, stage:"R32", date:"2026-06-29", time:"04:00", home:"A組2位", away:"B組2位", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:76, stage:"R32", date:"2026-06-30", time:"02:00", home:"C組1位", away:"F組2位", venue:"ヒューストンスタジアム(アメリカ)", japanRelated:true},
+{no:74, stage:"R32", date:"2026-06-30", time:"05:30", home:"E組1位", away:"A/B/C/D/F組 3位", venue:"ボストンスタジアム(アメリカ)", japanRelated:true},
+{no:75, stage:"R32", date:"2026-06-30", time:"10:00", home:"F組1位", away:"C組2位", venue:"モンテレースタジアム(メキシコ)", japanRelated:true},
+{no:78, stage:"R32", date:"2026-07-01", time:"02:00", home:"E組2位", away:"I組2位", venue:"ダラススタジアム(アメリカ)"},
+{no:77, stage:"R32", date:"2026-07-01", time:"06:00", home:"I組1位", away:"C/D/F/G/H組 3位", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)", japanRelated:true},
+{no:79, stage:"R32", date:"2026-07-01", time:"10:00", home:"A組1位", away:"C/E/F/H/I組 3位", venue:"メキシコシティスタジアム(メキシコ)", japanRelated:true},
+{no:80, stage:"R32", date:"2026-07-02", time:"01:00", home:"L組1位", away:"E/H/I/J/K組 3位", venue:"アトランタスタジアム(アメリカ)"},
+{no:82, stage:"R32", date:"2026-07-02", time:"05:00", home:"G組1位", away:"A/E/H/I/J組 3位", venue:"シアトルスタジアム(アメリカ)"},
+{no:81, stage:"R32", date:"2026-07-02", time:"09:00", home:"D組1位", away:"B/E/F/I/J組 3位", venue:"サンフランシスコベイエリアスタジアム(アメリカ)", japanRelated:true},
+{no:84, stage:"R32", date:"2026-07-03", time:"04:00", home:"H組1位", away:"J組2位", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:83, stage:"R32", date:"2026-07-03", time:"08:00", home:"K組2位", away:"L組2位", venue:"トロントスタジアム(カナダ)"},
+{no:85, stage:"R32", date:"2026-07-03", time:"12:00", home:"B組1位", away:"E/F/G/I/J組 3位", venue:"BCプレイスバンクーバー(カナダ)", japanRelated:true},
+{no:88, stage:"R32", date:"2026-07-04", time:"03:00", home:"D組2位", away:"G組2位", venue:"ダラススタジアム(アメリカ)"},
+{no:86, stage:"R32", date:"2026-07-04", time:"07:00", home:"J組1位", away:"H組2位", venue:"マイアミスタジアム(アメリカ)"},
+{no:87, stage:"R32", date:"2026-07-04", time:"10:30", home:"K組1位", away:"D/E/I/J/L組 3位", venue:"カンザスシティスタジアム(アメリカ)"},
+
+// === ラウンド16 (8試合) ===
+{no:90, stage:"R16", date:"2026-07-05", time:"02:00", home:"Match73勝者", away:"Match75勝者", venue:"ヒューストンスタジアム(アメリカ)", japanRelated:true},
+{no:89, stage:"R16", date:"2026-07-05", time:"06:00", home:"Match74勝者", away:"Match77勝者", venue:"フィラデルフィアスタジアム(アメリカ)", japanRelated:true},
+{no:91, stage:"R16", date:"2026-07-06", time:"05:00", home:"Match76勝者", away:"Match78勝者", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)", japanRelated:true},
+{no:92, stage:"R16", date:"2026-07-06", time:"09:00", home:"Match79勝者", away:"Match80勝者", venue:"メキシコシティスタジアム(メキシコ)", japanRelated:true},
+{no:93, stage:"R16", date:"2026-07-07", time:"04:00", home:"Match83勝者", away:"Match84勝者", venue:"ダラススタジアム(アメリカ)"},
+{no:94, stage:"R16", date:"2026-07-07", time:"09:00", home:"Match81勝者", away:"Match82勝者", venue:"シアトルスタジアム(アメリカ)", japanRelated:true},
+{no:95, stage:"R16", date:"2026-07-08", time:"01:00", home:"Match86勝者", away:"Match88勝者", venue:"アトランタスタジアム(アメリカ)"},
+{no:96, stage:"R16", date:"2026-07-08", time:"05:00", home:"Match85勝者", away:"Match87勝者", venue:"BCプレイスバンクーバー(カナダ)", japanRelated:true},
+
+// === 準々決勝 (4試合) ===
+{no:97, stage:"QF", date:"2026-07-10", time:"05:00", home:"Match89勝者", away:"Match90勝者", venue:"ボストンスタジアム(アメリカ)", japanRelated:true},
+{no:98, stage:"QF", date:"2026-07-11", time:"04:00", home:"Match93勝者", away:"Match94勝者", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:99, stage:"QF", date:"2026-07-12", time:"06:00", home:"Match91勝者", away:"Match92勝者", venue:"マイアミスタジアム(アメリカ)", japanRelated:true},
+{no:100, stage:"QF", date:"2026-07-12", time:"10:00", home:"Match95勝者", away:"Match96勝者", venue:"カンザスシティスタジアム(アメリカ)"},
+
+// === 準決勝 (2試合) ===
+{no:101, stage:"SF", date:"2026-07-15", time:"04:00", home:"Match97勝者", away:"Match98勝者", venue:"ダラススタジアム(アメリカ)"},
+{no:102, stage:"SF", date:"2026-07-16", time:"04:00", home:"Match99勝者", away:"Match100勝者", venue:"アトランタスタジアム(アメリカ)", japanRelated:true},
+
+// === 3位決定戦・決勝 ===
+{no:103, stage:"3RD", date:"2026-07-19", time:"06:00", home:"Match101敗者", away:"Match102敗者", venue:"マイアミスタジアム(アメリカ)"},
+{no:104, stage:"FINAL", date:"2026-07-20", time:"04:00", home:"Match101勝者", away:"Match102勝者", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+];
+
+// 全104試合の放送局デフォルト情報（試合別の指定がない場合に補完）
+const DEFAULT_BROADCAST = {
+  dazn: "全104試合ライブ・見逃し配信",
+};
+
+// ステージ表示名
+const STAGE_NAMES = {
+  GS: "グループステージ",
+  R32: "ラウンド32",
+  R16: "ラウンド16",
+  QF: "準々決勝",
+  SF: "準決勝",
+  "3RD": "3位決定戦",
+  FINAL: "決勝"
+};
+
+// グループ組み合わせ
+const GROUPS = {
+  A: ["メキシコ","南アフリカ","韓国","チェコ"],
+  B: ["カナダ","ボスニア・ヘルツェゴビナ","カタール","スイス"],
+  C: ["ブラジル","モロッコ","ハイチ","スコットランド"],
+  D: ["アメリカ","パラグアイ","オーストラリア","トルコ"],
+  E: ["ドイツ","キュラソー","コートジボワール","エクアドル"],
+  F: ["オランダ","日本","スウェーデン","チュニジア"],
+  G: ["ベルギー","エジプト","イラン","ニュージーランド"],
+  H: ["スペイン","カーボベルデ","サウジアラビア","ウルグアイ"],
+  I: ["フランス","セネガル","イラク","ノルウェー"],
+  J: ["アルゼンチン","アルジェリア","オーストリア","ヨルダン"],
+  K: ["ポルトガル","コンゴ民主共和国","ウズベキスタン","コロンビア"],
+  L: ["イングランド","クロアチア","ガーナ","パナマ"]
+};
+
+// 実況・解説者 全体ラインアップ（汎用情報・凡例として表示）
+const COMMENTATOR_LINEUP = {
+  nhk: {
+    label: "NHK(総合・BS・BSP4K)",
+    commentators: "NHKアナウンサー各局",
+    analysts: ["福西崇史","柿谷曜一朗","井原正巳","森岡隆三","播戸竜二","林陵平","本田圭佑"]
+  },
+  dazn: {
+    label: "DAZN",
+    commentators: ["青嶋達也","江本一真","河村太朗","北川義隆","喜谷知純","桑原秀和","桑原学","小林惇希","小松正英","瀬﨑一耀","下田恒幸","永田実","西達彦","西岡明彦","野並正佑","野村明弘","原大悟","福田浩大","藤田崇寛","松原稜典","安井成行","山田泰三"],
+    analysts: ["内田篤人","岩政大樹","太田宏介","風間八宏","川勝良一","佐藤勇人","佐藤寿人","髙萩洋次郎","田中隼磨","田中マルクス闘莉王","田中裕介","鄭大世","坪井慶介","戸田和幸","長谷川アーリアジャスール","福田正博","細貝萌","松原良香","水沼貴史","南雄太","安永聡太郎","山口素弘","ラモス瑠偉"]
+  },
+  ntv: {
+    label: "日本テレビ系",
+    commentators: ["鈴木崇司","田中毅","伊藤遼","澁谷善ヘイゼル"],
+    analysts: ["未発表(順次発表)"]
+  },
+  cx: {
+    label: "フジテレビ系",
+    commentators: ["ジョン カビラ","佐久間みなみ"],
+    analysts: ["小野伸二","柿谷曜一朗(メインナビゲーター)"]
+  }
+};
+
+// データ最終更新日時
+const DATA_UPDATED = "2026-06-14";
+
+</script>
+<script>
+(function(){
+  const WEEKDAYS = ["日","月","火","水","木","金","土"];
+
+  function parseDate(d){
+    const [y,m,dd] = d.split("-").map(Number);
+    return new Date(y, m-1, dd);
+  }
+  function fmtDateLabel(d){
+    const date = parseDate(d);
+    return `${date.getMonth()+1}/${date.getDate()}(${WEEKDAYS[date.getDay()]})`;
+  }
+  function todayStr(){
+    const now = new Date();
+    const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  const TODAY = todayStr();
+
+  // ---- ヘッダー更新表示 ----
+  document.getElementById('update-text').textContent =
+    `最終更新: ${DATA_UPDATED} 時点の情報を表示中（このページを開くたびに反映）`;
+  document.getElementById('footer-date').textContent = DATA_UPDATED;
+
+  // ---- 今日の試合パネル ----
+  function renderToday(){
+    const card = document.getElementById('today-card');
+    const todays = MATCHES.filter(m => m.date === TODAY);
+    const todayDate = new Date();
+    const label = `${todayDate.getMonth()+1}月${todayDate.getDate()}日(${WEEKDAYS[todayDate.getDay()]})`;
+
+    let html = `<div class="today-head">
+      <div class="today-title">⚽ 今日の試合</div>
+      <div class="today-date">${label}</div>
+    </div>`;
+
+    if(todays.length === 0){
+      // 次の試合日を探す
+      const upcoming = MATCHES.filter(m => m.date > TODAY).sort((a,b)=> a.date.localeCompare(b.date))[0];
+      if(upcoming){
+        html += `<div class="today-empty">本日は試合がありません。<br>次の試合は <b>${fmtDateLabel(upcoming.date)} ${upcoming.time}</b>〜<br><b>${upcoming.home} vs ${upcoming.away}</b></div>`;
+      } else {
+        html += `<div class="today-empty">本日は試合がありません。</div>`;
+      }
+    } else {
+      todays.forEach(m=>{
+        html += renderMatchCard(m, true);
+      });
+    }
+    card.innerHTML = html;
+    bindCardEvents(card);
+  }
+
+  // 放送情報を取得（確定済みBROADCAST_MAP優先、なければ個別指定、無ければ全試合共通のDAZN/BSP4K）
+  function getBroadcast(m){
+    if(typeof BROADCAST_MAP !== 'undefined' && BROADCAST_MAP[m.no]) return BROADCAST_MAP[m.no];
+    if(m.broadcast) return m.broadcast;
+    return { dazn: "全104試合ライブ配信", bsp4k: true };
+  }
+
+  // ---- 放送ピル生成 ----
+  function broadcastPills(m){
+    const b = getBroadcast(m);
+    let pills = [];
+    if(b.dazn) pills.push(`<span class="broadcast-pill dazn">📡 DAZN: ${b.dazn}</span>`);
+    if(b.nhk) pills.push(`<span class="broadcast-pill nhk">📺 ${b.nhk}${b.nhk_note ? ' ('+b.nhk_note+')' : ''}</span>`);
+    if(b.ntv) pills.push(`<span class="broadcast-pill ntv">📺 ${b.ntv}${b.ntv_note ? ' ('+b.ntv_note+')' : ''}</span>`);
+    if(b.cx) pills.push(`<span class="broadcast-pill cx">📺 ${b.cx}${b.cx_note ? ' ('+b.cx_note+')' : ''}</span>`);
+    // NHK BSP4Kは全試合録画含め放送（地上波/BSと別枠で常に表示）
+    pills.push(`<span class="broadcast-pill nhk">📺 NHK BSP4K（生中継・録画）</span>`);
+    return pills.join('');
+  }
+
+  // 各配信元の「番組表・配信予定確認ページ」リンク集
+  const COMMENTARY_LINKS = {
+    dazn: { label: "DAZN 番組表で確認", url: "https://www.dazn.com/ja-JP/schedule", cls: "dazn" },
+    nhk:  { label: "NHK 番組表で確認", url: "https://www.nhk.jp/program_search/", cls: "nhk" },
+    ntv:  { label: "日本テレビ 番組表で確認", url: "https://www.ntv.co.jp/program/", cls: "ntv" },
+    cx:   { label: "フジテレビ 番組表で確認", url: "https://www.fujitv.co.jp/schedule/", cls: "cx" },
+    goal: { label: "Goal.com 放送一覧で確認", url: "https://www.goal.com/jp/%E3%83%AA%E3%82%B9%E3%83%88/2026-world-cup-all-tv-guide/blt70f25e7f12788cd5", cls: "goal" }
+  };
+
+  function commentaryHtml(m){
+    const b = getBroadcast(m);
+    let keys = [];
+    ['dazn','nhk','ntv','cx'].forEach(k=>{ if(b[k]) keys.push(k); });
+    if(keys.length === 0) keys = ['dazn'];
+
+    let links = keys.map(k=>{
+      const l = COMMENTARY_LINKS[k];
+      return `<a class="link-pill ${l.cls}" href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`;
+    }).join('');
+    links += `<a class="link-pill goal" href="${COMMENTARY_LINKS.goal.url}" target="_blank" rel="noopener">${COMMENTARY_LINKS.goal.label} ↗</a>`;
+
+    return `<div class="commentary-links">${links}</div>
+      <div class="commentary-note">実況・解説者は各局の番組表ページで試合直前に発表・更新されます。タップして配信元の最新情報をご確認ください。</div>`;
+  }
+
+  // ---- 試合カードHTML ----
+  const NOW = new Date();
+  // 試合終了判定: キックオフ + 2時間30分（前後半・延長等の目安）を過ぎたら終了扱い
+  function isMatchFinished(m){
+    const [y,mo,d] = m.date.split('-').map(Number);
+    const [h,mi] = m.time.split(':').map(Number);
+    const kickoff = new Date(y, mo-1, d, h, mi);
+    const end = new Date(kickoff.getTime() + 150*60*1000);
+    return NOW > end;
+  }
+  function isMatchLive(m){
+    const [y,mo,d] = m.date.split('-').map(Number);
+    const [h,mi] = m.time.split(':').map(Number);
+    const kickoff = new Date(y, mo-1, d, h, mi);
+    const end = new Date(kickoff.getTime() + 150*60*1000);
+    return NOW >= kickoff && NOW <= end;
+  }
+
+  function renderMatchCard(m, inTodayPanel){
+    const isGS = m.stage === 'GS';
+    const stageLabel = isGS ? `${m.group}組 第${m.round}節` : STAGE_NAMES[m.stage];
+    const stageClass = isGS ? 'gs' : 'ko';
+    const isJpHome = m.home === '日本';
+    const isJpAway = m.away === '日本';
+    const isJapanMatch = m.japan || isJpHome || isJpAway;
+    const finished = isMatchFinished(m);
+    const live = isMatchLive(m);
+
+    let statusBadge = '';
+    if(live) statusBadge = `<span class="status-badge live">🔴 LIVE</span>`;
+    else if(finished) statusBadge = `<span class="status-badge finished">終了</span>`;
+
+    return `
+    <div class="match-card ${finished?'is-finished':''} ${isJapanMatch?'is-japan':''}" data-no="${m.no}">
+      <div class="match-summary" onclick="this.parentElement.classList.toggle('open')">
+        <div class="match-top">
+          <div class="match-time-row">
+            <span class="match-time">${m.time}<small>JST</small></span>
+            <span class="stage-tag ${stageClass}">${stageLabel}</span>
+            ${m.note ? `<span class="stage-tag note-tag">${m.note}</span>` : ''}
+            ${isJapanMatch ? `<span class="jp-badge">🇯🇵 日本戦</span>` : ''}
+            ${statusBadge}
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="vs-row">
+          <div class="team-block home">
+            <span class="team-name ${isJpHome?'jp':''}">${m.home}</span>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="team-block away">
+            <span class="team-name ${isJpAway?'jp':''}">${m.away}</span>
+          </div>
+        </div>
+      </div>
+      <div class="match-detail">
+        <div class="detail-section">
+          <div class="detail-label">会場</div>
+          <div class="venue-text">${m.venue}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">配信・放送</div>
+          <div class="broadcast-row">${broadcastPills(m)}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">実況・解説</div>
+          ${commentaryHtml(m)}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function bindCardEvents(container){
+    // onclick属性で処理済み（インライン）のため特に追加処理不要
+  }
+
+  // ---- 日付グループ化して描画 ----
+  function groupByDate(matches){
+    const groups = {};
+    matches.forEach(m=>{
+      if(!groups[m.date]) groups[m.date] = [];
+      groups[m.date].push(m);
+    });
+    return Object.keys(groups).sort().map(date=>({date, items: groups[date].sort((a,b)=> a.time.localeCompare(b.time))}));
+  }
+
+  function renderDateView(matches){
+    const groups = groupByDate(matches);
+    let html = '';
+    groups.forEach(g=>{
+      const isToday = g.date === TODAY;
+      html += `<div class="day-group">
+        <div class="day-header ${isToday?'is-today':''}">
+          <span class="d-date">${fmtDateLabel(g.date)}</span>
+          ${isToday ? '<span class="d-weekday">本日</span>' : ''}
+          <span class="day-line"></span>
+        </div>`;
+      g.items.forEach(m=> html += renderMatchCard(m));
+      html += `</div>`;
+    });
+    return html || `<div class="empty-state">該当する試合がありません</div>`;
+  }
+
+  function renderJapanView(){
+    const matches = MATCHES.filter(m => m.japan || m.home==='日本' || m.away==='日本' || m.japanRelated);
+    let html = `<div class="empty-state" style="padding:14px 4px;color:rgba(247,245,239,0.65);font-size:0.78rem;text-align:left;line-height:1.8;">
+      🇯🇵 グループF（オランダ・日本・スウェーデン・チュニジア）の全試合と、日本が勝ち上がった場合に関係する決勝トーナメントの該当カードを表示しています。
+    </div>`;
+    html += renderDateView(matches);
+    return html;
+  }
+
+  function renderGroupView(activeGroup){
+    let html = '';
+    const groups = activeGroup === 'KO'
+      ? null
+      : MATCHES.filter(m => m.group === activeGroup);
+
+    if(activeGroup === 'KO'){
+      const ko = MATCHES.filter(m => m.stage !== 'GS');
+      html += renderDateView(ko);
+    } else {
+      html += renderDateView(groups);
+    }
+    return html;
+  }
+
+  // ---- フィルターチップ（グループ別表示時）----
+  function renderFilters(activeView, activeGroup){
+    const filterBar = document.getElementById('filters');
+    if(activeView !== 'group'){
+      filterBar.innerHTML = '';
+      filterBar.style.display = 'none';
+      return;
+    }
+    filterBar.style.display = 'flex';
+    const allGroups = Object.keys(GROUPS);
+    let html = '';
+    allGroups.forEach(g=>{
+      html += `<button class="chip ${activeGroup===g?'active':''}" data-group="${g}">${g}組</button>`;
+    });
+    html += `<button class="chip ${activeGroup==='KO'?'active':''}" data-group="KO">決勝T</button>`;
+    filterBar.innerHTML = html;
+
+    filterBar.querySelectorAll('.chip').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.group = btn.dataset.group;
+        render();
+      });
+    });
+  }
+
+  // ---- 状態管理 & メインレンダー ----
+  const state = {
+    view: 'date',
+    group: 'A'
+  };
+
+  function render(){
+    const main = document.getElementById('main-content');
+    document.querySelectorAll('.tab-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.view === state.view);
+    });
+    renderFilters(state.view, state.group);
+
+    if(state.view === 'date'){
+      main.innerHTML = renderDateView(MATCHES);
+    } else if(state.view === 'group'){
+      main.innerHTML = renderGroupView(state.group);
+    } else if(state.view === 'japan'){
+      main.innerHTML = renderJapanView();
+    }
+
+    // 「本日」セクションへ自動スクロール（日程順表示の初回のみ）
+    if(state.view === 'date' && !state._scrolled){
+      state._scrolled = true;
+      requestAnimationFrame(()=>{
+        const todayHeader = main.querySelector('.day-header.is-today');
+        if(todayHeader){
+          todayHeader.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      });
+    }
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.view = btn.dataset.view;
+      render();
+    });
+  });
+
+  // ---- 初期化 ----
+  renderToday();
+  render();
+})();
+</script>
+</body>
+</html>
