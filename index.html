@@ -114,47 +114,6 @@
     100%{box-shadow:0 0 0 0 rgba(95,217,126,0);}
   }
 
-  /* === 今日の試合パネル === */
-  .today-wrap{
-    max-width:680px;
-    margin:-14px auto 0;
-    padding:0 16px;
-    position:relative;
-    z-index:2;
-  }
-  .today-card{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:0 8px 28px rgba(10,31,68,0.3);
-    padding:18px 18px 16px;
-    border-top:4px solid var(--today-accent);
-  }
-  .today-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin-bottom:10px;
-  }
-  .today-title{
-    font-size:0.95rem;
-    font-weight:800;
-    color:var(--today-accent);
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .today-date{
-    font-size:0.78rem;
-    color:var(--muted);
-    font-weight:600;
-  }
-  .today-empty{
-    font-size:0.88rem;
-    color:var(--muted);
-    padding:8px 2px 4px;
-    line-height:1.7;
-  }
-  .today-empty b{color:var(--ink);}
 
   /* === タブ切替 === */
   .tabs{
@@ -585,12 +544,6 @@
   </div>
 </header>
 
-<div class="today-wrap">
-  <div class="today-card" id="today-card">
-    <!-- JSで生成 -->
-  </div>
-</div>
-
 <div class="tabs">
   <button class="tab-btn active" data-view="date">日程順</button>
   <button class="tab-btn" data-view="group">グループ別</button>
@@ -915,34 +868,6 @@ const DATA_UPDATED = "2026-06-14";
   document.getElementById('footer-date').textContent = DATA_UPDATED;
 
   // ---- 今日の試合パネル ----
-  function renderToday(){
-    const card = document.getElementById('today-card');
-    const todays = MATCHES.filter(m => m.date === TODAY);
-    const todayDate = new Date();
-    const label = `${todayDate.getMonth()+1}月${todayDate.getDate()}日(${WEEKDAYS[todayDate.getDay()]})`;
-
-    let html = `<div class="today-head">
-      <div class="today-title">⚽ 今日の試合</div>
-      <div class="today-date">${label}</div>
-    </div>`;
-
-    if(todays.length === 0){
-      // 次の試合日を探す
-      const upcoming = MATCHES.filter(m => m.date > TODAY).sort((a,b)=> a.date.localeCompare(b.date))[0];
-      if(upcoming){
-        html += `<div class="today-empty">本日は試合がありません。<br>次の試合は <b>${fmtDateLabel(upcoming.date)} ${upcoming.time}</b>〜<br><b>${upcoming.home} vs ${upcoming.away}</b></div>`;
-      } else {
-        html += `<div class="today-empty">本日は試合がありません。</div>`;
-      }
-    } else {
-      todays.forEach(m=>{
-        html += renderMatchCard(m, true);
-      });
-    }
-    card.innerHTML = html;
-    bindCardEvents(card);
-  }
-
   // 放送情報を取得（確定済みBROADCAST_MAP優先、なければ個別指定、無ければ全試合共通のDAZN/BSP4K）
   function getBroadcast(m){
     if(typeof BROADCAST_MAP !== 'undefined' && BROADCAST_MAP[m.no]) return BROADCAST_MAP[m.no];
@@ -1181,7 +1106,6 @@ const DATA_UPDATED = "2026-06-14";
   });
 
   // ---- 初期化 ----
-  renderToday();
   render();
 })();
 </script>
