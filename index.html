@@ -575,81 +575,122 @@
 <script>
 // FIFAワールドカップ2026 全104試合データ（日本時間）
 // 出典: Goal.com Japan, 各種報道(2026年6月時点)
-// 出典: ABEMA TIMES (times.abema.tv/articles/-/10243707) 2026/6/13時点
+// 出典: VOD STREAM (vod.app-liv.jp/archive/156215/) 2026/6/16時点
 // match no -> broadcast object
+// nhk:true = NHK総合地上波中継あり（リンクは試合日付から動的生成）
+// cx:true  = フジテレビ地上波中継あり
+// ntv:true = 日本テレビ地上波中継あり
 const BROADCAST_MAP = {
-1:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/12 04:00 メキシコ vs 南アフリカ NHK,BSP4K
-2:  {dazn:"全104試合ライブ配信"},                                                  // 6/12 11:00 韓国 vs チェコ BSP4K
-7:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/13 04:00 カナダ vs ボスニア NHK,BSP4K
-19: {dazn:"全104試合ライブ配信"},                                                  // 6/13 10:00 アメリカ vs パラグアイ BSP4K
-8:  {dazn:"全104試合ライブ配信"},                                                  // 6/14 04:00 カタール vs スイス BSP4K
-13: {dazn:"全104試合ライブ配信"},                                                  // 6/14 07:00 ブラジル vs モロッコ BSP4K
-14: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/14 10:00 ハイチ vs スコットランド NHK,BSP4K
-20: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/14 13:00 オーストラリア vs トルコ 日テレ,BSP4K
-25: {dazn:"全104試合ライブ配信"},                                                  // 6/15 02:00 ドイツ vs キュラソー BSP4K
-31: {dazn:"全試合無料配信", nhk:"NHK総合", nhk_note:"地上波生中継"},               // 6/15 05:00 オランダ vs 日本 NHK,BSP4K, DAZN無料
-26: {dazn:"全104試合ライブ配信"},                                                  // 6/15 08:00 コートジボワール vs エクアドル BSP4K
-32: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/15 11:00 スウェーデン vs チュニジア 日テレ,BSP4K
-43: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/16 01:00 スペイン vs カーボベルデ NHK,BSP4K
-37: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/16 04:00 ベルギー vs エジプト NHK,BSP4K
-44: {dazn:"全104試合ライブ配信"},                                                  // 6/16 07:00 サウジアラビア vs ウルグアイ BSP4K
-38: {dazn:"全104試合ライブ配信"},                                                  // 6/16 10:00 イラン vs ニュージーランド BSP4K
-49: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/17 04:00 フランス vs セネガル フジ,BSP4K
-50: {dazn:"全104試合ライブ配信"},                                                  // 6/17 07:00 イラク vs ノルウェー BSP4K
-55: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/17 10:00 アルゼンチン vs アルジェリア NHK,BSP4K
-56: {dazn:"全104試合ライブ配信"},                                                  // 6/17 13:00 オーストリア vs ヨルダン BSP4K
-61: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/18 02:00 ポルトガル vs コンゴ フジ,BSP4K
-67: {dazn:"全104試合ライブ配信"},                                                  // 6/18 05:00 イングランド vs クロアチア BSP4K
-68: {dazn:"全104試合ライブ配信"},                                                  // 6/18 08:00 ガーナ vs パナマ BSP4K
-62: {dazn:"全104試合ライブ配信"},                                                  // 6/18 11:00 ウズベキスタン vs コロンビア BSP4K
-3:  {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/19 01:00 チェコ vs 南アフリカ 日テレ,BSP4K
-9:  {dazn:"全104試合ライブ配信"},                                                  // 6/19 04:00 スイス vs ボスニア BSP4K
-10: {dazn:"全104試合ライブ配信"},                                                  // 6/19 07:00 カナダ vs カタール BSP4K
-4:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/19 10:00 メキシコ vs 韓国 NHK,BSP4K
-21: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/20 04:00 アメリカ vs オーストラリア NHK,BSP4K
-15: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/20 07:00 スコットランド vs モロッコ フジ,BSP4K
-16: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/20 09:30 ブラジル vs ハイチ NHK,BSP4K (時刻09:30に修正)
-22: {dazn:"全104試合ライブ配信"},                                                  // 6/20 12:00 トルコ vs パラグアイ BSP4K (時刻12:00に修正)
-33: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/21 02:00 オランダ vs スウェーデン NHK,BSP4K
-27: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/21 05:00 ドイツ vs コートジボワール 日テレ,BSP4K
-28: {dazn:"全104試合ライブ配信"},                                                  // 6/21 09:00 エクアドル vs キュラソー BSP4K
-34: {dazn:"全試合無料配信", ntv:"日本テレビ系", ntv_note:"地上波生中継", nhk:"NHK BS", nhk_note:"BS生中継"}, // 6/21 13:00 チュニジア vs 日本 日テレ,NHK BS
-45: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/22 01:00 スペイン vs サウジアラビア NHK,BSP4K
-39: {dazn:"全104試合ライブ配信"},                                                  // 6/22 04:00 ベルギー vs イラン BSP4K
-46: {dazn:"全104試合ライブ配信"},                                                  // 6/22 07:00 ウルグアイ vs カーボベルデ BSP4K
-40: {dazn:"全104試合ライブ配信"},                                                  // 6/22 10:00 ニュージーランド vs エジプト BSP4K
-57: {dazn:"全104試合ライブ配信"},                                                  // 6/23 02:00 アルゼンチン vs オーストリア BSP4K
-51: {dazn:"全104試合ライブ配信"},                                                  // 6/23 06:00 フランス vs イラク BSP4K
-52: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/23 09:00 ノルウェー vs セネガル NHK,BSP4K
-58: {dazn:"全104試合ライブ配信"},                                                  // 6/23 12:00 ヨルダン vs アルジェリア BSP4K
-63: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/24 02:00 ポルトガル vs ウズベキスタン NHK,BSP4K
-69: {dazn:"全104試合ライブ配信"},                                                  // 6/24 05:00 イングランド vs ガーナ BSP4K
-70: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/24 08:00 パナマ vs クロアチア フジ,BSP4K
-64: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/24 11:00 コロンビア vs コンゴ 日テレ,BSP4K
-11: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/25 04:00 スイス vs カナダ NHK,BSP4K
-12: {dazn:"全104試合ライブ配信"},                                                  // 6/25 04:00 ボスニア vs カタール BSP4K
-17: {dazn:"全104試合ライブ配信"},                                                  // 6/25 07:00 スコットランド vs ブラジル BSP4K (時刻07:00)
-18: {dazn:"全104試合ライブ配信"},                                                  // 6/25 07:00 モロッコ vs ハイチ BSP4K
-5:  {dazn:"全104試合ライブ配信"},                                                  // 6/25 10:00 南アフリカ vs 韓国 BSP4K
-6:  {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/25 10:00 チェコ vs メキシコ NHK,BSP4K
-29: {dazn:"全104試合ライブ配信"},                                                  // 6/26 05:00 キュラソー vs コートジボワール BSP4K
-30: {dazn:"全104試合ライブ配信"},                                                  // 6/26 05:00 エクアドル vs ドイツ BSP4K
-35: {dazn:"全試合無料配信", nhk:"NHK総合", nhk_note:"地上波生中継"},               // 6/26 08:00 日本 vs スウェーデン NHK,BSP4K
-36: {dazn:"全104試合ライブ配信"},                                                  // 6/26 08:00 チュニジア vs オランダ BSP4K
-23: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/26 11:00 トルコ vs アメリカ 日テレ,BSP4K
-24: {dazn:"全104試合ライブ配信"},                                                  // 6/26 11:00 パラグアイ vs オーストラリア BSP4K
-53: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/27 04:00 ノルウェー vs フランス NHK,BSP4K
-54: {dazn:"全104試合ライブ配信"},                                                  // 6/27 04:00 セネガル vs イラク BSP4K
-47: {dazn:"全104試合ライブ配信"},                                                  // 6/27 09:00 カーボベルデ vs サウジアラビア BSP4K
-48: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/27 09:00 ウルグアイ vs スペイン 日テレ,BSP4K
-41: {dazn:"全104試合ライブ配信"},                                                  // 6/27 12:00 エジプト vs イラン BSP4K
-42: {dazn:"全104試合ライブ配信", ntv:"日本テレビ系", ntv_note:"地上波生中継"},     // 6/27 12:00 ニュージーランド vs ベルギー 日テレ,BSP4K
-71: {dazn:"全104試合ライブ配信"},                                                  // 6/28 06:00 パナマ vs イングランド BSP4K
-72: {dazn:"全104試合ライブ配信"},                                                  // 6/28 06:00 クロアチア vs ガーナ BSP4K
-65: {dazn:"全104試合ライブ配信", cx:"フジテレビ系", cx_note:"地上波生中継"},       // 6/28 08:30 コロンビア vs ポルトガル フジ,BSP4K
-66: {dazn:"全104試合ライブ配信"},                                                  // 6/28 08:30 コンゴ vs ウズベキスタン BSP4K
-59: {dazn:"全104試合ライブ配信"},                                                  // 6/28 11:00 アルジェリア vs オーストリア BSP4K
-60: {dazn:"全104試合ライブ配信", nhk:"NHK総合", nhk_note:"地上波生中継"},          // 6/28 11:00 ヨルダン vs アルゼンチン NHK,BSP4K
+// === グループステージ ===
+1:  {nhk:true},   // 6/12 04:00 メキシコ vs 南アフリカ
+2:  {},           // 6/12 11:00 韓国 vs チェコ
+7:  {nhk:true},   // 6/13 04:00 カナダ vs ボスニア
+19: {},           // 6/13 10:00 アメリカ vs パラグアイ
+8:  {},           // 6/14 04:00 カタール vs スイス
+13: {},           // 6/14 07:00 ブラジル vs モロッコ
+14: {nhk:true},   // 6/14 10:00 ハイチ vs スコットランド
+20: {ntv:true},   // 6/14 13:00 オーストラリア vs トルコ
+25: {},           // 6/15 02:00 ドイツ vs キュラソー
+31: {nhk:true, daznFree:true}, // 6/15 05:00 オランダ vs 日本
+26: {},           // 6/15 08:00 コートジボワール vs エクアドル
+32: {ntv:true},   // 6/15 11:00 スウェーデン vs チュニジア
+43: {nhk:true},   // 6/16 01:00 スペイン vs カーボベルデ
+37: {nhk:true},   // 6/16 04:00 ベルギー vs エジプト
+44: {},           // 6/16 07:00 サウジアラビア vs ウルグアイ
+38: {},           // 6/16 10:00 イラン vs ニュージーランド
+49: {cx:true},    // 6/17 04:00 フランス vs セネガル
+50: {},           // 6/17 07:00 イラク vs ノルウェー
+55: {nhk:true},   // 6/17 10:00 アルゼンチン vs アルジェリア
+56: {},           // 6/17 13:00 オーストリア vs ヨルダン
+61: {cx:true},    // 6/18 02:00 ポルトガル vs DRコンゴ
+67: {},           // 6/18 05:00 イングランド vs クロアチア
+68: {},           // 6/18 08:00 ガーナ vs パナマ
+62: {},           // 6/18 11:00 ウズベキスタン vs コロンビア
+3:  {ntv:true},   // 6/19 01:00 チェコ vs 南アフリカ
+9:  {},           // 6/19 04:00 スイス vs ボスニア
+10: {},           // 6/19 07:00 カナダ vs カタール
+4:  {nhk:true},   // 6/19 10:00 メキシコ vs 韓国
+21: {nhk:true},   // 6/20 04:00 アメリカ vs オーストラリア
+15: {cx:true},    // 6/20 07:00 スコットランド vs モロッコ
+16: {nhk:true},   // 6/20 09:30 ブラジル vs ハイチ
+22: {},           // 6/20 12:00 トルコ vs パラグアイ
+33: {nhk:true},   // 6/21 02:00 オランダ vs スウェーデン
+27: {ntv:true},   // 6/21 05:00 ドイツ vs コートジボワール
+28: {},           // 6/21 09:00 エクアドル vs キュラソー
+34: {ntv:true, nhkbs:true, daznFree:true}, // 6/21 13:00 チュニジア vs 日本
+45: {nhk:true},   // 6/22 01:00 スペイン vs サウジアラビア
+39: {},           // 6/22 04:00 ベルギー vs イラン
+46: {},           // 6/22 07:00 ウルグアイ vs カーボベルデ
+40: {},           // 6/22 10:00 ニュージーランド vs エジプト
+57: {},           // 6/23 02:00 アルゼンチン vs オーストリア
+51: {},           // 6/23 06:00 フランス vs イラク
+52: {nhk:true},   // 6/23 09:00 ノルウェー vs セネガル
+58: {},           // 6/23 12:00 ヨルダン vs アルジェリア
+63: {nhk:true},   // 6/24 02:00 ポルトガル vs ウズベキスタン
+69: {},           // 6/24 05:00 イングランド vs ガーナ
+70: {cx:true},    // 6/24 08:00 パナマ vs クロアチア
+64: {ntv:true},   // 6/24 11:00 コロンビア vs DRコンゴ
+11: {nhk:true},   // 6/25 04:00 スイス vs カナダ
+12: {},           // 6/25 04:00 ボスニア vs カタール
+17: {},           // 6/25 07:00 スコットランド vs ブラジル
+18: {},           // 6/25 07:00 モロッコ vs ハイチ
+5:  {},           // 6/25 10:00 南アフリカ vs 韓国
+6:  {nhk:true},   // 6/25 10:00 チェコ vs メキシコ
+29: {},           // 6/26 05:00 キュラソー vs コートジボワール
+30: {},           // 6/26 05:00 エクアドル vs ドイツ
+35: {nhk:true, daznFree:true}, // 6/26 08:00 日本 vs スウェーデン
+36: {},           // 6/26 08:00 チュニジア vs オランダ
+23: {ntv:true},   // 6/26 11:00 トルコ vs アメリカ
+24: {},           // 6/26 11:00 パラグアイ vs オーストラリア
+53: {nhk:true},   // 6/27 04:00 ノルウェー vs フランス
+54: {},           // 6/27 04:00 セネガル vs イラク
+47: {},           // 6/27 09:00 カーボベルデ vs サウジアラビア
+48: {ntv:true},   // 6/27 09:00 ウルグアイ vs スペイン
+41: {},           // 6/27 12:00 エジプト vs イラン
+42: {ntv:true},   // 6/27 12:00 ニュージーランド vs ベルギー
+71: {},           // 6/28 06:00 パナマ vs イングランド
+72: {},           // 6/28 06:00 クロアチア vs ガーナ
+65: {cx:true},    // 6/28 08:30 コロンビア vs ポルトガル
+66: {},           // 6/28 08:30 DRコンゴ vs ウズベキスタン
+59: {},           // 6/28 11:00 アルジェリア vs オーストリア
+60: {nhk:true},   // 6/28 11:00 ヨルダン vs アルゼンチン
+// === 決勝トーナメント ===
+73: {},           // 6/29 04:00 A組2位 vs B組2位
+76: {},           // 6/30 02:00 C組1位 vs F組2位
+74: {},           // 6/30 05:30 E組1位 vs ABCDF組3位
+75: {},           // 6/30 10:00 F組1位 vs C組2位
+78: {ntv:true},   // 7/1 02:00 E組2位 vs I組2位
+77: {},           // 7/1 06:00 I組1位 vs CDFGH組3位
+79: {},           // 7/1 10:00 A組1位 vs CEFHI組3位
+80: {},           // 7/2 01:00 L組1位 vs EHIJK組3位
+82: {},           // 7/2 05:00 G組1位 vs AEHIJ組3位
+81: {},           // 7/2 09:00 D組1位 vs BEFIJ組3位
+83: {},           // 7/3 04:00 H組1位 vs J組2位
+84: {ntv:true},   // 7/3 08:00 K組2位 vs L組2位
+85: {},           // 7/3 12:00 B組1位 vs EFGIJ組3位
+88: {},           // 7/4 03:00 D組2位 vs G組2位
+86: {ntv:true},   // 7/4 07:00 J組1位 vs H組2位
+87: {},           // 7/4 10:30 K組1位 vs DEIJL組3位
+// R16
+90: {},           // 7/5 02:00 W73 vs W75
+89: {ntv:true},   // 7/5 06:00 W74 vs W77
+91: {},           // 7/6 05:00 W76 vs W78
+92: {},           // 7/6 09:00 W79 vs W80
+93: {ntv:true},   // 7/7 04:00 W83 vs W84
+94: {},           // 7/7 09:00 W81 vs W82
+95: {nhk:true},   // 7/8 01:00 W86 vs W88
+96: {},           // 7/8 05:00 W85 vs W87
+// QF
+97: {},           // 7/10 05:00 W89 vs W90
+98: {},           // 7/11 04:00 W93 vs W94
+99: {},           // 7/12 06:00 W91 vs W92
+100:{},           // 7/12 10:00 W95 vs W96
+// SF
+101:{nhk:true},   // 7/15 04:00 W97 vs W98
+102:{},           // 7/16 04:00 W99 vs W100
+// 3位・決勝
+103:{nhk:true},   // 7/19 06:00 3位決定戦
+104:{nhk:true},   // 7/20 04:00 決勝
 };
 
 const MATCHES = [
@@ -868,49 +909,49 @@ const DATA_UPDATED = "2026-06-14";
   document.getElementById('footer-date').textContent = DATA_UPDATED;
 
   // ---- 今日の試合パネル ----
-  // 放送情報を取得（確定済みBROADCAST_MAP優先、なければ個別指定、無ければ全試合共通のDAZN/BSP4K）
+  // 放送情報を取得
   function getBroadcast(m){
-    if(typeof BROADCAST_MAP !== 'undefined' && BROADCAST_MAP[m.no]) return BROADCAST_MAP[m.no];
-    if(m.broadcast) return m.broadcast;
-    return { dazn: "全104試合ライブ配信", bsp4k: true };
+    if(typeof BROADCAST_MAP !== 'undefined' && BROADCAST_MAP[m.no] !== undefined) return BROADCAST_MAP[m.no];
+    return {};
+  }
+
+  // NHK番組表URLを試合日付から動的生成 例: 2026-06-15 → 20260615
+  function nhkUrl(date){
+    return `https://www.nhk.jp/timetable/130/g2/${date.replace(/-/g,'')}/`;
   }
 
   // ---- 放送ピル生成 ----
   function broadcastPills(m){
     const b = getBroadcast(m);
+    const isJapan = m.japan || m.home==='日本' || m.away==='日本';
+    const daznLabel = (b.daznFree || isJapan) ? '日本戦は無料ライブ配信' : '全104試合ライブ配信';
     let pills = [];
-    if(b.dazn) pills.push(`<span class="broadcast-pill dazn">📡 DAZN: ${b.dazn}</span>`);
-    if(b.nhk) pills.push(`<span class="broadcast-pill nhk">📺 ${b.nhk}${b.nhk_note ? ' ('+b.nhk_note+')' : ''}</span>`);
-    if(b.ntv) pills.push(`<span class="broadcast-pill ntv">📺 ${b.ntv}${b.ntv_note ? ' ('+b.ntv_note+')' : ''}</span>`);
-    if(b.cx) pills.push(`<span class="broadcast-pill cx">📺 ${b.cx}${b.cx_note ? ' ('+b.cx_note+')' : ''}</span>`);
-    // NHK BSP4Kは全試合録画含め放送（地上波/BSと別枠で常に表示）
-    pills.push(`<span class="broadcast-pill nhk">📺 NHK BSP4K（生中継・録画）</span>`);
+    pills.push(`<span class="broadcast-pill dazn">📡 DAZN: ${daznLabel}</span>`);
+    if(b.nhk)   pills.push(`<span class="broadcast-pill nhk">📺 NHK総合（地上波・生中継）</span>`);
+    if(b.nhkbs) pills.push(`<span class="broadcast-pill nhk">📺 NHK BS（生中継）</span>`);
+    if(b.ntv)   pills.push(`<span class="broadcast-pill ntv">📺 日本テレビ系（地上波・生中継）</span>`);
+    if(b.cx)    pills.push(`<span class="broadcast-pill cx">📺 フジテレビ系（地上波・生中継）</span>`);
+    pills.push(`<span class="broadcast-pill nhk">📺 NHK BSP4K（全試合・生中継/録画）</span>`);
     return pills.join('');
   }
 
-  // 各配信元の「番組表・配信予定確認ページ」リンク集
-  const COMMENTARY_LINKS = {
-    dazn: { label: "DAZN 番組表で確認", url: "https://www.dazn.com/ja-JP/schedule", cls: "dazn" },
-    nhk:  { label: "NHK 番組表で確認", url: "https://www.nhk.jp/program_search/", cls: "nhk" },
-    ntv:  { label: "日本テレビ 番組表で確認", url: "https://www.ntv.co.jp/program/", cls: "ntv" },
-    cx:   { label: "フジテレビ 番組表で確認", url: "https://www.fujitv.co.jp/schedule/", cls: "cx" },
-    goal: { label: "Goal.com 放送一覧で確認", url: "https://www.goal.com/jp/%E3%83%AA%E3%82%B9%E3%83%88/2026-world-cup-all-tv-guide/blt70f25e7f12788cd5", cls: "goal" }
-  };
+  const LINK_DAZN = "https://www.dazn.com/ja-JP/schedule";
+  const LINK_NTV  = "https://www.ntv.co.jp/program/";
+  const LINK_CX   = "https://www.fujitv.co.jp/s_cx/timetable/index.html";
+  const LINK_GOAL = "https://www.goal.com/jp/%E3%83%AA%E3%82%B9%E3%83%88/2026-world-cup-all-tv-guide/blt70f25e7f12788cd5";
 
   function commentaryHtml(m){
     const b = getBroadcast(m);
-    let keys = [];
-    ['dazn','nhk','ntv','cx'].forEach(k=>{ if(b[k]) keys.push(k); });
-    if(keys.length === 0) keys = ['dazn'];
+    let links = [];
+    links.push(`<a class="link-pill dazn" href="${LINK_DAZN}" target="_blank" rel="noopener">DAZN 番組表で確認 ↗</a>`);
+    if(b.nhk)   links.push(`<a class="link-pill nhk" href="${nhkUrl(m.date)}" target="_blank" rel="noopener">NHK 番組表で確認 ↗</a>`);
+    if(b.nhkbs) links.push(`<a class="link-pill nhk" href="${nhkUrl(m.date)}" target="_blank" rel="noopener">NHK BS 番組表で確認 ↗</a>`);
+    if(b.ntv)   links.push(`<a class="link-pill ntv" href="${LINK_NTV}" target="_blank" rel="noopener">日本テレビ 番組表で確認 ↗</a>`);
+    if(b.cx)    links.push(`<a class="link-pill cx"  href="${LINK_CX}"  target="_blank" rel="noopener">フジテレビ 番組表で確認 ↗</a>`);
+    links.push(`<a class="link-pill goal" href="${LINK_GOAL}" target="_blank" rel="noopener">Goal.com 放送一覧で確認 ↗</a>`);
 
-    let links = keys.map(k=>{
-      const l = COMMENTARY_LINKS[k];
-      return `<a class="link-pill ${l.cls}" href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`;
-    }).join('');
-    links += `<a class="link-pill goal" href="${COMMENTARY_LINKS.goal.url}" target="_blank" rel="noopener">${COMMENTARY_LINKS.goal.label} ↗</a>`;
-
-    return `<div class="commentary-links">${links}</div>
-      <div class="commentary-note">実況・解説者は各局の番組表ページで試合直前に発表・更新されます。タップして配信元の最新情報をご確認ください。</div>`;
+    return `<div class="commentary-links">${links.join('')}</div>
+      <div class="commentary-note">実況・解説者は各局の番組表で試合直前に発表されます。タップして最新情報をご確認ください。</div>`;
   }
 
   // ---- 試合カードHTML ----
