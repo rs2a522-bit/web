@@ -1,0 +1,17 @@
+[
+  {
+    "no": 1,
+    "stage": "GS",
+    "group": "A",
+    "round": 1,
+    "date": "2026-06-12",
+    "time": "04:00",
+    "home": "メキシコ",
+    "away": "南アフリカ",
+    "venue": "エスタディオ・アステカ(メキシコ)",
+    "status": "FINISHED",
+    "score": { "home": 2, "away": 1 },
+    "broadcast": { "dazn": "見逃し配信あり", "nhk": "NHK総合(録画)" },
+    "commentary": "解説：〇〇 / 実況：〇〇"
+  }
+]
