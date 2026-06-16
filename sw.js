@@ -1,6 +1,6 @@
 // W杯2026 観戦カレンダー Service Worker
 // キャッシュ名を更新すると、ユーザーが次回開いたときに新しい index.html が反映されます
-const CACHE_NAME = 'wc2026-cache-v1';
+const CACHE_NAME = 'wc2026-cache-v2';
 const ASSETS = [
   './index.html',
   './manifest.json',
