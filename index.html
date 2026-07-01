@@ -322,6 +322,16 @@
     color:var(--muted);
     text-transform:uppercase;
   }
+  .score-box{
+    font-family:var(--mono);
+    font-size:0.92rem;
+    font-weight:700;
+    color:var(--ink);
+    background:var(--accent-soft);
+    padding:2px 8px;
+    border:1px solid var(--accent);
+    letter-spacing:0.02em;
+  }
 
   /* === 詳細パネル === */
   .match-detail{
@@ -471,10 +481,10 @@
 
 <div class="legend">
   <h2>放送・配信について</h2>
-  <div class="legend-row">本アプリのグループステージ(72試合)の放送局情報は、ABEMA TIMES「FIFAワールドカップ2026 全104試合 テレビ放送・ネット配信まとめ」(2026/6/13時点)を基にしています。</div>
+  <div class="legend-row">本アプリの放送局情報は、ABEMA TIMES・Goal.com・kickoff-calendar.com等の報道(2026/7/1時点)を基にしています。</div>
   <div class="legend-row">『DAZN』は全104試合をライブ配信(日本戦は無料)。『NHK BSP4K』は全104試合を生中継または録画で放送。地上波(NHK総合・日本テレビ・フジテレビ)は確定済みカードのみ表示しています。</div>
   <div class="legend-row">実況・解説者の情報は試合直前に各局から発表されるため、各試合の「実況・解説」欄から該当局の番組表ページへ移動してご確認ください。</div>
-  <div class="legend-row" style="margin-top:8px;opacity:0.7;">※決勝トーナメントの対戦カードは結果により決定します。表示は仮の組み合わせ表記（例: A組1位 vs C/E/F/H/I組3位）です。地上波の中継カードは順次発表され、本アプリは未反映の場合があります。</div>
+  <div class="legend-row" style="margin-top:8px;opacity:0.7;">※ラウンド32は結果が判明済みの試合はチーム名・スコアを反映しています。ラウンド16以降は未確定のため「R32第◯試合勝者」のような表記です。結果が出次第、随時更新します。</div>
 </div>
 
 <footer>
@@ -566,39 +576,39 @@ const BROADCAST_MAP = {
 59: {},           // 6/28 11:00 アルジェリア vs オーストリア
 60: {nhk:true},   // 6/28 11:00 ヨルダン vs アルゼンチン
 // === 決勝トーナメント ===
-73: {},           // 6/29 04:00 A組2位 vs B組2位
-76: {},           // 6/30 02:00 C組1位 vs F組2位
-74: {},           // 6/30 05:30 E組1位 vs ABCDF組3位
-75: {},           // 6/30 10:00 F組1位 vs C組2位
-78: {ntv:true},   // 7/1 02:00 E組2位 vs I組2位
-77: {},           // 7/1 06:00 I組1位 vs CDFGH組3位
-79: {},           // 7/1 10:00 A組1位 vs CEFHI組3位
-80: {},           // 7/2 01:00 L組1位 vs EHIJK組3位
-82: {},           // 7/2 05:00 G組1位 vs AEHIJ組3位
-81: {},           // 7/2 09:00 D組1位 vs BEFIJ組3位
-83: {},           // 7/3 04:00 H組1位 vs J組2位
-84: {ntv:true},   // 7/3 08:00 K組2位 vs L組2位
-85: {},           // 7/3 12:00 B組1位 vs EFGIJ組3位
-88: {},           // 7/4 03:00 D組2位 vs G組2位
-86: {ntv:true},   // 7/4 07:00 J組1位 vs H組2位
-87: {},           // 7/4 10:30 K組1位 vs DEIJL組3位
+73: {},                    // 6/29 04:00 南アフリカ vs カナダ
+76: {cx:true, nhkbs:true, daznFree:true}, // 6/30 02:00 ブラジル vs 日本
+74: {cx:true},             // 6/30 05:30 ドイツ vs パラグアイ
+75: {nhk:true},            // 6/30 10:00 オランダ vs モロッコ
+78: {ntv:true},            // 7/1 02:00 コートジボワール vs ノルウェー
+77: {cx:true},             // 7/1 06:00 フランス vs スウェーデン
+79: {nhk:true},            // 7/1 10:00 メキシコ vs エクアドル
+80: {cx:true},             // 7/2 01:00 イングランド vs コンゴ民主共和国
+82: {nhk:true},            // 7/2 05:00 ベルギー vs セネガル
+81: {},                    // 7/2 09:00 アメリカ vs ボスニア・ヘルツェゴビナ
+84: {},                    // 7/3 04:00 スペイン vs オーストリア
+83: {ntv:true},            // 7/3 08:00 ポルトガル vs クロアチア
+85: {},                    // 7/3 12:00 スイス vs アルジェリア
+88: {},                    // 7/4 03:00 オーストラリア vs エジプト
+86: {ntv:true},            // 7/4 07:00 アルゼンチン vs カーボベルデ
+87: {},                    // 7/4 10:30 コロンビア vs ガーナ
 // R16
-90: {},           // 7/5 02:00 W73 vs W75
-89: {ntv:true},   // 7/5 06:00 W74 vs W77
-91: {},           // 7/6 05:00 W76 vs W78
-92: {},           // 7/6 09:00 W79 vs W80
-93: {ntv:true},   // 7/7 04:00 W83 vs W84
-94: {},           // 7/7 09:00 W81 vs W82
-95: {nhk:true},   // 7/8 01:00 W86 vs W88
-96: {},           // 7/8 05:00 W85 vs W87
+90: {},           // 7/5 02:00 R32:南ア/カナダ勝者 vs オランダ/モロッコ勝者
+89: {ntv:true},   // 7/5 06:00 R32:ドイツ/パラグアイ勝者 vs フランス/スウェーデン勝者
+91: {},           // 7/6 05:00 R32:ブラジル vs コートジボワール/ノルウェー勝者
+92: {},           // 7/6 09:00 R32:メキシコ/エクアドル勝者 vs イングランド/コンゴ勝者
+93: {ntv:true},   // 7/7 04:00 R32:ポルトガル/クロアチア勝者 vs スペイン/オーストリア勝者
+94: {},           // 7/7 09:00 R32:アメリカ/ボスニア勝者 vs ベルギー/セネガル勝者
+95: {nhk:true},   // 7/8 01:00 R32:アルゼンチン/カーボベルデ勝者 vs オーストラリア/エジプト勝者
+96: {},           // 7/8 05:00 R32:スイス/アルジェリア勝者 vs コロンビア/ガーナ勝者
 // QF
-97: {},           // 7/10 05:00 W89 vs W90
-98: {},           // 7/11 04:00 W93 vs W94
-99: {},           // 7/12 06:00 W91 vs W92
-100:{},           // 7/12 10:00 W95 vs W96
+97: {},           // 7/10 05:00 R16第2試合勝者 vs R16第1試合勝者
+98: {},           // 7/11 04:00 R16第5試合勝者 vs R16第6試合勝者
+99: {},           // 7/12 06:00 R16第3試合勝者 vs R16第4試合勝者
+100:{},           // 7/12 10:00 R16第7試合勝者 vs R16第8試合勝者
 // SF
-101:{nhk:true},   // 7/15 04:00 W97 vs W98
-102:{},           // 7/16 04:00 W99 vs W100
+101:{nhk:true},   // 7/15 04:00 準々決勝1勝者 vs 準々決勝2勝者
+102:{},           // 7/16 04:00 準々決勝3勝者 vs 準々決勝4勝者
 // 3位・決勝
 103:{nhk:true},   // 7/19 06:00 3位決定戦
 104:{nhk:true},   // 7/20 04:00 決勝
@@ -692,46 +702,46 @@ const MATCHES = [
 {no:72, stage:"GS", group:"L", round:3, date:"2026-06-28", time:"06:00", home:"クロアチア", away:"ガーナ", venue:"フィラデルフィアスタジアム(アメリカ)"},
 
 // === ラウンド32 (16試合) ===
-{no:73, stage:"R32", date:"2026-06-29", time:"04:00", home:"A組2位", away:"B組2位", venue:"ロサンゼルススタジアム(アメリカ)"},
-{no:76, stage:"R32", date:"2026-06-30", time:"02:00", home:"C組1位", away:"F組2位", venue:"ヒューストンスタジアム(アメリカ)", japanRelated:true},
-{no:74, stage:"R32", date:"2026-06-30", time:"05:30", home:"E組1位", away:"A/B/C/D/F組 3位", venue:"ボストンスタジアム(アメリカ)", japanRelated:true},
-{no:75, stage:"R32", date:"2026-06-30", time:"10:00", home:"F組1位", away:"C組2位", venue:"モンテレースタジアム(メキシコ)", japanRelated:true},
-{no:78, stage:"R32", date:"2026-07-01", time:"02:00", home:"E組2位", away:"I組2位", venue:"ダラススタジアム(アメリカ)"},
-{no:77, stage:"R32", date:"2026-07-01", time:"06:00", home:"I組1位", away:"C/D/F/G/H組 3位", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)", japanRelated:true},
-{no:79, stage:"R32", date:"2026-07-01", time:"10:00", home:"A組1位", away:"C/E/F/H/I組 3位", venue:"メキシコシティスタジアム(メキシコ)", japanRelated:true},
-{no:80, stage:"R32", date:"2026-07-02", time:"01:00", home:"L組1位", away:"E/H/I/J/K組 3位", venue:"アトランタスタジアム(アメリカ)"},
-{no:82, stage:"R32", date:"2026-07-02", time:"05:00", home:"G組1位", away:"A/E/H/I/J組 3位", venue:"シアトルスタジアム(アメリカ)"},
-{no:81, stage:"R32", date:"2026-07-02", time:"09:00", home:"D組1位", away:"B/E/F/I/J組 3位", venue:"サンフランシスコベイエリアスタジアム(アメリカ)", japanRelated:true},
-{no:84, stage:"R32", date:"2026-07-03", time:"04:00", home:"H組1位", away:"J組2位", venue:"ロサンゼルススタジアム(アメリカ)"},
-{no:83, stage:"R32", date:"2026-07-03", time:"08:00", home:"K組2位", away:"L組2位", venue:"トロントスタジアム(カナダ)"},
-{no:85, stage:"R32", date:"2026-07-03", time:"12:00", home:"B組1位", away:"E/F/G/I/J組 3位", venue:"BCプレイスバンクーバー(カナダ)", japanRelated:true},
-{no:88, stage:"R32", date:"2026-07-04", time:"03:00", home:"D組2位", away:"G組2位", venue:"ダラススタジアム(アメリカ)"},
-{no:86, stage:"R32", date:"2026-07-04", time:"07:00", home:"J組1位", away:"H組2位", venue:"マイアミスタジアム(アメリカ)"},
-{no:87, stage:"R32", date:"2026-07-04", time:"10:30", home:"K組1位", away:"D/E/I/J/L組 3位", venue:"カンザスシティスタジアム(アメリカ)"},
+{no:73, stage:"R32", date:"2026-06-29", time:"04:00", home:"南アフリカ", away:"カナダ", venue:"ロサンゼルススタジアム(アメリカ)", result:{home:0, away:1, status:"FT"}},
+{no:76, stage:"R32", date:"2026-06-30", time:"02:00", home:"ブラジル", away:"日本", venue:"ヒューストンスタジアム(アメリカ)", japan:true, result:{home:2, away:1, status:"FT"}},
+{no:74, stage:"R32", date:"2026-06-30", time:"05:30", home:"ドイツ", away:"パラグアイ", venue:"ボストンスタジアム(アメリカ)"},
+{no:75, stage:"R32", date:"2026-06-30", time:"10:00", home:"オランダ", away:"モロッコ", venue:"モンテレースタジアム(メキシコ)"},
+{no:78, stage:"R32", date:"2026-07-01", time:"02:00", home:"コートジボワール", away:"ノルウェー", venue:"ダラススタジアム(アメリカ)", result:{home:1, away:2, status:"FT"}},
+{no:77, stage:"R32", date:"2026-07-01", time:"06:00", home:"フランス", away:"スウェーデン", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:79, stage:"R32", date:"2026-07-01", time:"10:00", home:"メキシコ", away:"エクアドル", venue:"メキシコシティスタジアム(メキシコ)"},
+{no:80, stage:"R32", date:"2026-07-02", time:"01:00", home:"イングランド", away:"コンゴ民主共和国", venue:"アトランタスタジアム(アメリカ)"},
+{no:82, stage:"R32", date:"2026-07-02", time:"05:00", home:"ベルギー", away:"セネガル", venue:"シアトルスタジアム(アメリカ)"},
+{no:81, stage:"R32", date:"2026-07-02", time:"09:00", home:"アメリカ", away:"ボスニア・ヘルツェゴビナ", venue:"サンフランシスコベイエリアスタジアム(アメリカ)"},
+{no:84, stage:"R32", date:"2026-07-03", time:"04:00", home:"スペイン", away:"オーストリア", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:83, stage:"R32", date:"2026-07-03", time:"08:00", home:"ポルトガル", away:"クロアチア", venue:"トロントスタジアム(カナダ)"},
+{no:85, stage:"R32", date:"2026-07-03", time:"12:00", home:"スイス", away:"アルジェリア", venue:"BCプレイスバンクーバー(カナダ)"},
+{no:88, stage:"R32", date:"2026-07-04", time:"03:00", home:"オーストラリア", away:"エジプト", venue:"ダラススタジアム(アメリカ)"},
+{no:86, stage:"R32", date:"2026-07-04", time:"07:00", home:"アルゼンチン", away:"カーボベルデ", venue:"マイアミスタジアム(アメリカ)"},
+{no:87, stage:"R32", date:"2026-07-04", time:"10:30", home:"コロンビア", away:"ガーナ", venue:"カンザスシティスタジアム(アメリカ)"},
 
 // === ラウンド16 (8試合) ===
-{no:90, stage:"R16", date:"2026-07-05", time:"02:00", home:"Match73勝者", away:"Match75勝者", venue:"ヒューストンスタジアム(アメリカ)", japanRelated:true},
-{no:89, stage:"R16", date:"2026-07-05", time:"06:00", home:"Match74勝者", away:"Match77勝者", venue:"フィラデルフィアスタジアム(アメリカ)", japanRelated:true},
-{no:91, stage:"R16", date:"2026-07-06", time:"05:00", home:"Match76勝者", away:"Match78勝者", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)", japanRelated:true},
-{no:92, stage:"R16", date:"2026-07-06", time:"09:00", home:"Match79勝者", away:"Match80勝者", venue:"メキシコシティスタジアム(メキシコ)", japanRelated:true},
-{no:93, stage:"R16", date:"2026-07-07", time:"04:00", home:"Match83勝者", away:"Match84勝者", venue:"ダラススタジアム(アメリカ)"},
-{no:94, stage:"R16", date:"2026-07-07", time:"09:00", home:"Match81勝者", away:"Match82勝者", venue:"シアトルスタジアム(アメリカ)", japanRelated:true},
-{no:95, stage:"R16", date:"2026-07-08", time:"01:00", home:"Match86勝者", away:"Match88勝者", venue:"アトランタスタジアム(アメリカ)"},
-{no:96, stage:"R16", date:"2026-07-08", time:"05:00", home:"Match85勝者", away:"Match87勝者", venue:"BCプレイスバンクーバー(カナダ)", japanRelated:true},
+{no:90, stage:"R16", date:"2026-07-05", time:"02:00", home:"南アフリカ/カナダ勝者", away:"オランダ/モロッコ勝者", venue:"ヒューストンスタジアム(アメリカ)"},
+{no:89, stage:"R16", date:"2026-07-05", time:"06:00", home:"ドイツ/パラグアイ勝者", away:"フランス/スウェーデン勝者", venue:"フィラデルフィアスタジアム(アメリカ)"},
+{no:91, stage:"R16", date:"2026-07-06", time:"05:00", home:"ブラジル", away:"ノルウェー", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:92, stage:"R16", date:"2026-07-06", time:"09:00", home:"メキシコ/エクアドル勝者", away:"イングランド/コンゴ民主共和国勝者", venue:"メキシコシティスタジアム(メキシコ)"},
+{no:93, stage:"R16", date:"2026-07-07", time:"04:00", home:"ポルトガル/クロアチア勝者", away:"スペイン/オーストリア勝者", venue:"ダラススタジアム(アメリカ)"},
+{no:94, stage:"R16", date:"2026-07-07", time:"09:00", home:"アメリカ/ボスニア勝者", away:"ベルギー/セネガル勝者", venue:"シアトルスタジアム(アメリカ)"},
+{no:95, stage:"R16", date:"2026-07-08", time:"01:00", home:"アルゼンチン/カーボベルデ勝者", away:"オーストラリア/エジプト勝者", venue:"アトランタスタジアム(アメリカ)"},
+{no:96, stage:"R16", date:"2026-07-08", time:"05:00", home:"スイス/アルジェリア勝者", away:"コロンビア/ガーナ勝者", venue:"BCプレイスバンクーバー(カナダ)"},
 
 // === 準々決勝 (4試合) ===
-{no:97, stage:"QF", date:"2026-07-10", time:"05:00", home:"Match89勝者", away:"Match90勝者", venue:"ボストンスタジアム(アメリカ)", japanRelated:true},
-{no:98, stage:"QF", date:"2026-07-11", time:"04:00", home:"Match93勝者", away:"Match94勝者", venue:"ロサンゼルススタジアム(アメリカ)"},
-{no:99, stage:"QF", date:"2026-07-12", time:"06:00", home:"Match91勝者", away:"Match92勝者", venue:"マイアミスタジアム(アメリカ)", japanRelated:true},
-{no:100, stage:"QF", date:"2026-07-12", time:"10:00", home:"Match95勝者", away:"Match96勝者", venue:"カンザスシティスタジアム(アメリカ)"},
+{no:97, stage:"QF", date:"2026-07-10", time:"05:00", home:"R16第2試合勝者", away:"R16第1試合勝者", venue:"ボストンスタジアム(アメリカ)"},
+{no:98, stage:"QF", date:"2026-07-11", time:"04:00", home:"R16第5試合勝者", away:"R16第6試合勝者", venue:"ロサンゼルススタジアム(アメリカ)"},
+{no:99, stage:"QF", date:"2026-07-12", time:"06:00", home:"R16第3試合勝者", away:"R16第4試合勝者", venue:"マイアミスタジアム(アメリカ)"},
+{no:100, stage:"QF", date:"2026-07-12", time:"10:00", home:"R16第7試合勝者", away:"R16第8試合勝者", venue:"カンザスシティスタジアム(アメリカ)"},
 
 // === 準決勝 (2試合) ===
-{no:101, stage:"SF", date:"2026-07-15", time:"04:00", home:"Match97勝者", away:"Match98勝者", venue:"ダラススタジアム(アメリカ)"},
-{no:102, stage:"SF", date:"2026-07-16", time:"04:00", home:"Match99勝者", away:"Match100勝者", venue:"アトランタスタジアム(アメリカ)", japanRelated:true},
+{no:101, stage:"SF", date:"2026-07-15", time:"04:00", home:"準々決勝1勝者", away:"準々決勝2勝者", venue:"ダラススタジアム(アメリカ)"},
+{no:102, stage:"SF", date:"2026-07-16", time:"04:00", home:"準々決勝3勝者", away:"準々決勝4勝者", venue:"アトランタスタジアム(アメリカ)"},
 
 // === 3位決定戦・決勝 ===
-{no:103, stage:"3RD", date:"2026-07-19", time:"06:00", home:"Match101敗者", away:"Match102敗者", venue:"マイアミスタジアム(アメリカ)"},
-{no:104, stage:"FINAL", date:"2026-07-20", time:"04:00", home:"Match101勝者", away:"Match102勝者", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
+{no:103, stage:"3RD", date:"2026-07-19", time:"06:00", home:"準決勝1敗者", away:"準決勝2敗者", venue:"マイアミスタジアム(アメリカ)"},
+{no:104, stage:"FINAL", date:"2026-07-20", time:"04:00", home:"準決勝1勝者", away:"準決勝2勝者", venue:"ニューヨーク/ニュージャージースタジアム(アメリカ)"},
 ];
 
 // 全104試合の放送局デフォルト情報（試合別の指定がない場合に補完）
@@ -791,7 +801,7 @@ const COMMENTATOR_LINEUP = {
 };
 
 // データ最終更新日時
-const DATA_UPDATED = "2026-06-14";
+const DATA_UPDATED = "2026-07-01";
 
 </script>
 <script>
@@ -912,7 +922,7 @@ const DATA_UPDATED = "2026-06-14";
           </div>
           <div class="vs-row">
             <span class="team-name home ${isJpHome?'jp':''}">${m.home}</span>
-            <span class="vs-divider">vs</span>
+            ${m.result ? `<span class="score-box">${m.result.home} - ${m.result.away}</span>` : `<span class="vs-divider">vs</span>`}
             <span class="team-name away ${isJpAway?'jp':''}">${m.away}</span>
           </div>
         </div>
@@ -967,9 +977,9 @@ const DATA_UPDATED = "2026-06-14";
   }
 
   function renderJapanView(){
-    const matches = MATCHES.filter(m => m.japan || m.home==='日本' || m.away==='日本' || m.japanRelated);
-    let html = `<div class="empty-state" style="padding:14px 4px;color:rgba(247,245,239,0.65);font-size:0.78rem;text-align:left;line-height:1.8;">
-      🇯🇵 グループF（オランダ・日本・スウェーデン・チュニジア）の全試合と、日本が勝ち上がった場合に関係する決勝トーナメントの該当カードを表示しています。
+    const matches = MATCHES.filter(m => m.japan || m.home==='日本' || m.away==='日本');
+    let html = `<div class="empty-state" style="padding:14px 4px;color:var(--muted);font-size:0.78rem;text-align:left;line-height:1.8;">
+      日本代表はグループFを2位で通過後、ラウンド32でブラジルに1-2で敗れ、大会を終えました。ここではグループステージ全3試合とブラジル戦を表示しています。
     </div>`;
     html += renderDateView(matches);
     return html;
